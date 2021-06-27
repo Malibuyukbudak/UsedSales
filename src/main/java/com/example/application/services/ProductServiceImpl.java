@@ -45,4 +45,11 @@ public class ProductServiceImpl implements ProductService{
         productRepository.findAll().iterator().forEachRemaining(productSet::add);
         return productSet;
     }
+
+    @Override
+    public Set<Product> getList(String filter) {
+        Set<Product> productSet=new HashSet<>();
+        productRepository.findByDescriptionContaining(filter).iterator().forEachRemaining(productSet::add);
+        return productSet;
+    }
 }

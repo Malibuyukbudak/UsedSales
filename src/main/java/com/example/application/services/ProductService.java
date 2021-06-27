@@ -16,6 +16,7 @@ public interface ProductService {
 
     void save(Product product);
     Set<Product> getList();
+    Set<Product> getList(String filter);
 
 
 }
