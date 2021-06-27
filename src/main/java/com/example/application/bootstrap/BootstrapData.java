@@ -13,14 +13,13 @@ public class BootstrapData implements CommandLineRunner {
     private final CategoryService categoryService;
     private final MessageService messageService;
     private final ProductService productService;
-    private final ProductViewService productViewService;
+
     private final UserService userService;
 
-    public BootstrapData(CategoryService categoryService, MessageService messageService, ProductService productService, ProductViewService productViewService, UserService userService) {
+    public BootstrapData(CategoryService categoryService, MessageService messageService, ProductService productService, UserService userService) {
         this.categoryService = categoryService;
         this.messageService = messageService;
         this.productService = productService;
-        this.productViewService = productViewService;
         this.userService = userService;
     }
 

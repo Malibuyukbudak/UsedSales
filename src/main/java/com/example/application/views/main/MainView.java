@@ -11,6 +11,7 @@ import com.vaadin.flow.server.VaadinSession;
 @Route
 public class MainView extends VerticalLayout {
     public MainView(){
+
         if(VaadinSession.getCurrent().getSession().getAttribute("LoggedInSystemUserId")==null){
             if (UI.getCurrent() != null) {
                 UI.getCurrent().getPage().setLocation("/login");

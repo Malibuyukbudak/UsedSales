@@ -1,10 +1,10 @@
 package com.example.application.services;
 
 import com.example.application.models.Product;
-import com.example.application.repository.ProductRepository;
-import com.example.application.repository.UserRepository;
+
 
 import java.util.List;
+import java.util.Set;
 
 public interface ProductService {
 
@@ -15,4 +15,7 @@ public interface ProductService {
     void delete(Product product);
 
     void save(Product product);
+    Set<Product> getList();
+
+
 }
