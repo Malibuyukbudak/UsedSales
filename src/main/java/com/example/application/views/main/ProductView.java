@@ -47,6 +47,7 @@ public class ProductView extends VerticalLayout {
                 "Kastamonu","Kayseri","Kilis","Kirikkale","Kirklareli","Kirsehir","Kocaeli","Konya","Kutahya","Malatya","Manisa",
                 "Mardin","Mersin","Mugla","Mus","Nevsehir","Nigde","Ordu","Osmaniye","Rize","Sakarya","Samsun","Sanliurfa","Siirt",
                 "Sinop","Sirnak","Sivas","Tekirdag","Tokat","Trabzon","Tunceli","Usak","Van","Yalova","Yozgat","Zonguldak"};
+
         selectCity.setItems(cities);
 
         TextField textCityDistrict=new TextField("City District","Enter Your City District");
@@ -77,13 +78,13 @@ public class ProductView extends VerticalLayout {
         Button btnSave= new Button("Save");
         Button btnCancel=new Button("Cancel");
 
-        //buradaydım.
+
         btnSave.addClickListener(buttonClickEvent -> {
             Product product=new Product();
             Category category=new Category();
 
             category.setCategoryType(selectCategory.getValue().toString());
-            //product.setPrice(textPrice.getValue());
+            product.setPrice(Double.valueOf(textPrice.getValue()));
             product.setCityDistrict(textCityDistrict.getValue());
 
             categoryService.save(category);
@@ -98,9 +99,6 @@ public class ProductView extends VerticalLayout {
 
             productService.save(product);
             dialog.close();
-
-
-
 
         });
 
@@ -120,16 +118,18 @@ public class ProductView extends VerticalLayout {
         btnEkle.addClickListener(buttonClickEvent -> {
             dialog.open();
         });
-        ///
+
 
         List<Product> productList=new ArrayList<>();
         productList.addAll(productService.getList());
 
-        ///
+
+
 
         Grid<Product> grid=new Grid<>(Product.class);
         grid.removeColumnByKey("id");
         grid.setColumns("date","city","cityDistrict","address","price","image","description","category","user");
+        grid.setItems(productList);
         add(btnEkle,grid);
     }
 }
