@@ -10,14 +10,11 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +27,7 @@ public class ProductView extends VerticalLayout {
     Grid<Product> grid = new Grid<>(Product.class);
 
 
+
     public ProductView(ProductService productService, CategoryService categoryService) {
         this.productService = productService;
         this.categoryService = categoryService;
@@ -39,6 +37,7 @@ public class ProductView extends VerticalLayout {
         dialog.setModal(true);
 
         //Properties
+
         TextField textDate = new TextField("Date", "Enter Your Date");
         textDate.setValue(String.valueOf(LocalDate.now()));
 
@@ -60,6 +59,7 @@ public class ProductView extends VerticalLayout {
         TextField textImage = new TextField("Image", "Enter Your Image");
         TextField textDescription = new TextField("Description", "Enter Your Description");
 
+
         ComboBox selectCategory = new ComboBox<>("Category");
         List<Category> categories = categoryService.findAll();
         List<String> categoryFor = new ArrayList<>();
@@ -76,14 +76,14 @@ public class ProductView extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
         formLayout.add(textDate, selectCity, textCityDistrict, textAddress, textPrice, textImage, textDescription, selectCategory, textUser);
         //Seach
-        Button btnFilter=new Button("Seach",VaadinIcon.SEARCH.create());
+        Button btnFilter = new Button("Seach", VaadinIcon.SEARCH.create());
 
-        TextField textFilter=new TextField();
+        TextField textFilter = new TextField();
         textFilter.setPlaceholder("Key");
 
-        HorizontalLayout filterGroup=new HorizontalLayout();
+        HorizontalLayout filterGroup = new HorizontalLayout();
 
-        filterGroup.add(textFilter,btnFilter);
+        filterGroup.add(textFilter, btnFilter);
 
         btnFilter.addClickListener(buttonClickEvent -> {
             refreshData(textFilter.getValue());
@@ -117,7 +117,7 @@ public class ProductView extends VerticalLayout {
 
 
             productService.save(product);
-            refreshData(textFilter.getValue().toString());
+            refreshData(textFilter.getValue());
             dialog.close();
 
         });
@@ -142,8 +142,10 @@ public class ProductView extends VerticalLayout {
 
         grid.removeColumnByKey("id");
         grid.setColumns("user", "city", "cityDistrict", "address", "price", "image", "description", "category", "date");
+
+
         refreshData();
-        add(btnEkle,filterGroup,grid);
+        add(btnEkle, filterGroup, grid);
     }
 
     private void refreshData() {
@@ -151,6 +153,7 @@ public class ProductView extends VerticalLayout {
         productList.addAll(productService.getList());
         grid.setItems(productList);
     }
+
     private void refreshData(String filter) {
         List<Product> productList = new ArrayList<>();
         productList.addAll(productService.getList(filter));

@@ -40,29 +40,92 @@ public class BootstrapData implements CommandLineRunner {
         furniture.setCategoryType("Furniture");
         categoryService.save(furniture);
 
-
-        //User
+        //Users
+        //User1
         User user1=new User();
         user1.setFirstName("Mali");
         user1.setLastName("Buyukbudak");
         user1.setEmail("malibuyukbudak@gmail.com");
-        user1.setPassword("user1password");
+        user1.setPassword("user1");
         userService.save(user1);
 
+        //User2
+        User user2=new User();
+        user1.setFirstName("Yusuf");
+        user1.setLastName("Mirza");
+        user1.setEmail("yusufmirza@gmail.com");
+        user1.setPassword("user2");
+        userService.save(user2);
+
+        //User3
+        User user3=new User();
+        user1.setFirstName("Mustafa");
+        user1.setLastName("Atmaca");
+        user1.setEmail("mustafaatmaca@gmail.com");
+        user1.setPassword("user3");
+        userService.save(user3);
+
+        //User4
+        User user4=new User();
+        user1.setFirstName("Burak");
+        user1.setLastName("Yılmaz");
+        user1.setEmail("burakyılmaz@gmail.com");
+        user1.setPassword("user4");
+        userService.save(user4);
 
 
-        //Product
+        //Products
+
+        //Product1
         Product product1=new Product();
-        product1.setAddress("urun adresi");
-        product1.setCity("ıstanbul");
+        product1.setAddress("Istanbul Fatih address");
+        product1.setCity("Istanbul");
         product1.setCityDistrict("Fatih");
         product1.setDate(LocalDate.now());
-        product1.setDescription("araba acıklamasi");
-        product1.setPrice(1000.0);
+        product1.setDescription("Car description : fiat egea 2018 ");
+        product1.setPrice(100000.0);
         product1.setCategory(car);
         product1.setUser(user1);
         productService.save(product1);
 
+        //Product2
+
+        Product product2=new Product();
+        product2.setAddress("Edirne Merkez address");
+        product2.setCity("Edirne");
+        product2.setCityDistrict("Merkez");
+        product2.setDate(LocalDate.now());
+        product2.setDescription("Furniture descriptions : armchair");
+        product2.setPrice(250.0);
+        product2.setCategory(furniture);
+        product2.setUser(user2);
+        productService.save(product2);
+
+        //Product3
+
+        Product product3=new Product();
+        product3.setAddress("Balıkesir Burhaniye address");
+        product3.setCity("Balıkesir");
+        product3.setCityDistrict("Burhaniye");
+        product3.setDate(LocalDate.now());
+        product3.setDescription("Electronic descriptions: computer");
+        product3.setPrice(4600.0);
+        product3.setCategory(electronic);
+        product3.setUser(user3);
+        productService.save(product3);
+
+        //Product4
+
+        Product product4=new Product();
+        product4.setAddress("Izmir Konak address");
+        product4.setCity("Izmir");
+        product4.setCityDistrict("Konak");
+        product4.setDate(LocalDate.now());
+        product4.setDescription("Electronic descriptions: headphone");
+        product4.setPrice(450.0);
+        product4.setCategory(furniture);
+        product4.setUser(user4);
+        productService.save(product4);
 
 
 

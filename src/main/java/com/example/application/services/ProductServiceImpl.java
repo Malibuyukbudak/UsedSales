@@ -49,7 +49,7 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public Set<Product> getList(String filter) {
         Set<Product> productSet=new HashSet<>();
-        productRepository.findByDescriptionContaining(filter).iterator().forEachRemaining(productSet::add);
+        productRepository.findByDescriptionContainingIgnoreCase(filter).iterator().forEachRemaining(productSet::add);
         return productSet;
     }
 }
