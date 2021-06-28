@@ -51,26 +51,26 @@ public class BootstrapData implements CommandLineRunner {
 
         //User2
         User user2=new User();
-        user1.setFirstName("Yusuf");
-        user1.setLastName("Mirza");
-        user1.setEmail("yusufmirza@gmail.com");
-        user1.setPassword("user2");
+        user2.setFirstName("Yusuf");
+        user2.setLastName("Mirza");
+        user2.setEmail("yusufmirza@gmail.com");
+        user2.setPassword("user2");
         userService.save(user2);
 
         //User3
         User user3=new User();
-        user1.setFirstName("Mustafa");
-        user1.setLastName("Atmaca");
-        user1.setEmail("mustafaatmaca@gmail.com");
-        user1.setPassword("user3");
+        user3.setFirstName("Mustafa");
+        user3.setLastName("Atmaca");
+        user3.setEmail("mustafaatmaca@gmail.com");
+        user3.setPassword("user3");
         userService.save(user3);
 
         //User4
         User user4=new User();
-        user1.setFirstName("Burak");
-        user1.setLastName("Yılmaz");
-        user1.setEmail("burakyılmaz@gmail.com");
-        user1.setPassword("user4");
+        user4.setFirstName("Burak");
+        user4.setLastName("Yılmaz");
+        user4.setEmail("burakyılmaz@gmail.com");
+        user4.setPassword("user4");
         userService.save(user4);
 
 

@@ -30,5 +30,4 @@ public class Product {
     @ManyToOne
     private User user;
 
-
 }

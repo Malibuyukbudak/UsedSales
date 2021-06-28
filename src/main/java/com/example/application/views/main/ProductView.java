@@ -2,19 +2,25 @@ package com.example.application.views.main;
 
 
 import com.example.application.models.Category;
+import com.example.application.models.Message;
 import com.example.application.models.Product;
 import com.example.application.services.CategoryService;
+import com.example.application.services.MessageService;
 import com.example.application.services.ProductService;
+import com.example.application.services.UserService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,22 +30,32 @@ import java.util.List;
 public class ProductView extends VerticalLayout {
     private final ProductService productService;
     private final CategoryService categoryService;
+    private final UserService userService;
+    private final MessageService messageService;
     Grid<Product> grid = new Grid<>(Product.class);
+    Dialog messageDialog= new Dialog();
+    Dialog dialog = new Dialog();
 
 
 
-    public ProductView(ProductService productService, CategoryService categoryService) {
+    public ProductView(ProductService productService, CategoryService categoryService, UserService userService, MessageService messageService) {
         this.productService = productService;
         this.categoryService = categoryService;
+        this.userService=userService;
+        this.messageService = messageService;
 
 
-        Dialog dialog = new Dialog();
         dialog.setModal(true);
+        messageDialog.setModal(true);
+        messageDialog.setWidth("300px");
+        messageDialog.setHeight("300px");
+
 
         //Properties
 
-        TextField textDate = new TextField("Date", "Enter Your Date");
-        textDate.setValue(String.valueOf(LocalDate.now()));
+        DatePicker valueDatePicker = new DatePicker();
+        LocalDate now = LocalDate.now();
+        valueDatePicker.setValue(now);
 
         ComboBox selectCity = new ComboBox<>("City");
         String[] cities = new String[]{"Adana", "Adiyaman", "Afyon", "Agri", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin", "Aydin",
@@ -74,8 +90,12 @@ public class ProductView extends VerticalLayout {
 
 
         FormLayout formLayout = new FormLayout();
-        formLayout.add(textDate, selectCity, textCityDistrict, textAddress, textPrice, textImage, textDescription, selectCategory, textUser);
-        //Seach
+        formLayout.add(valueDatePicker, selectCity, textCityDistrict, textAddress, textPrice, textImage, textDescription, selectCategory, textUser);
+
+        //Properties Last
+
+
+        //Filter Begin
         Button btnFilter = new Button("Seach", VaadinIcon.SEARCH.create());
 
         TextField textFilter = new TextField();
@@ -88,7 +108,9 @@ public class ProductView extends VerticalLayout {
         btnFilter.addClickListener(buttonClickEvent -> {
             refreshData(textFilter.getValue());
         });
-        //Save-Cancel
+        //Fİlter Last
+
+        // Properties Save-Cancel Begin
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
         horizontalLayout.setMargin(true);
@@ -106,15 +128,13 @@ public class ProductView extends VerticalLayout {
             product.setCityDistrict(textCityDistrict.getValue());
 
             categoryService.save(category);
+
             product.setCategory(category);
-
-
             product.setAddress(textAddress.getValue());
             product.setDescription(textDescription.getValue());
-            product.setDate(LocalDate.parse(textDate.getValue()));
+            product.setDate(valueDatePicker.getValue());
             product.setCity(String.valueOf(selectCity.getValue()));
             //product.setUser();
-
 
             productService.save(product);
             refreshData(textFilter.getValue());
@@ -130,6 +150,8 @@ public class ProductView extends VerticalLayout {
         horizontalLayout.add(btnSave, btnCancel);
         dialog.add(formLayout, horizontalLayout);
 
+        // Properties Save-Cancel Last
+
 
         //Add Product click to dialog
         Button btnEkle = new Button("Add Product", VaadinIcon.INSERT.create());
@@ -139,13 +161,49 @@ public class ProductView extends VerticalLayout {
             dialog.open();
         });
 
+        //message begin
+
+        TextArea textMessage=new TextArea();
+        textMessage.setWidth("200px");
+        textMessage.setWidth("200px");
+            //message send
+        Button sendMessageBtn=new Button("Send");
+        sendMessageBtn.addClickListener(buttonClickEvent -> {
+            Message message1=new Message();
+            message1.setMessageText(textMessage.getValue());
+            //message1.setUser();
+            messageService.save(message1);
+            messageDialog.close();
+
+        });
+
+            //message cancel
+        Button cancelMessageBtn=new Button("Cancel");
+        cancelMessageBtn.addClickListener(buttonClickEvent -> {
+            messageDialog.close();
+        });
+
+        messageDialog.add(textMessage,sendMessageBtn,cancelMessageBtn);
+            //
+        //message last
 
         grid.removeColumnByKey("id");
         grid.setColumns("user", "city", "cityDistrict", "address", "price", "image", "description", "category", "date");
-
+        grid.addComponentColumn(item -> createMessageButton()).setHeader("Message");
 
         refreshData();
         add(btnEkle, filterGroup, grid);
+    }
+
+
+    private Button createMessageButton() {
+        @SuppressWarnings("unchecked")
+        Button button = new Button("Message");
+        button.addClickListener(buttonClickEvent -> {
+            messageDialog.open();
+
+        });
+        return button;
     }
 
     private void refreshData() {
