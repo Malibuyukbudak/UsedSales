@@ -11,19 +11,29 @@ import com.example.application.services.ProductService;
 import com.example.application.services.UserService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 
+import javax.imageio.ImageIO;
 import javax.management.Notification;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +51,8 @@ public class ProductView extends VerticalLayout {
 
 
 
+
+
     public ProductView(ProductService productService, CategoryService categoryService, UserService userService, MessageService messageService) {
         this.productService = productService;
         this.categoryService = categoryService;
@@ -49,7 +61,7 @@ public class ProductView extends VerticalLayout {
 
 
         dialog.setModal(true);
-        messageDialog.setModal(true);
+        //messageDialog.setModal(true);
         messageDialog.setWidth("300px");
         messageDialog.setHeight("300px");
 
@@ -300,7 +312,8 @@ public class ProductView extends VerticalLayout {
 
         TextField textPrice = new TextField("Price", "Enter Your Price");
 
-        TextField textImage = new TextField("Image", "Enter Your Image");
+        //Image image = new Image();
+
 
         TextField textDescription = new TextField("Description", "Enter Your Description");
         //Adress,Price,Image,Description Last
@@ -323,7 +336,7 @@ public class ProductView extends VerticalLayout {
 
         //FormLayout
         FormLayout formLayout = new FormLayout();
-        formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress, textImage, textDescription, valueDatePicker);
+        formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress,textDescription, valueDatePicker);
         //FormLayout Last
 
         //Properties Last
@@ -352,11 +365,12 @@ public class ProductView extends VerticalLayout {
         Button btnSave = new Button("Save");
         Button btnCancel = new Button("Cancel");
 
-
+        Product product = new Product();
         btnSave.addClickListener(buttonClickEvent -> {
-            Product product = new Product();
+
             Category category = new Category();
             User user=new User();
+
 
 
             category.setCategoryType(selectCategory.getValue().toString());
@@ -371,9 +385,11 @@ public class ProductView extends VerticalLayout {
             product.setDate(valueDatePicker.getValue());
             product.setCity(String.valueOf(selectCity.getValue()));
 
+
             if (VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId") != null){
                 user = userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get();
                 product.setUser(user);
+
             }
 
             productService.save(product);
@@ -406,19 +422,19 @@ public class ProductView extends VerticalLayout {
         TextArea textMessage = new TextArea();
         textMessage.setWidth("200px");
         textMessage.setWidth("200px");
-        //message send
+            //message send
         Button sendMessageBtn = new Button("Send");
         sendMessageBtn.addClickListener(buttonClickEvent -> {
             Message message1 = new Message();
             message1.setMessageText(textMessage.getValue());
-            //message1.setUser();
+            //message1.setUser(user);
 
             messageService.save(message1);
             messageDialog.close();
 
         });
 
-        //message cancel
+            //message cancel
         Button cancelMessageBtn = new Button("Cancel");
         cancelMessageBtn.addClickListener(buttonClickEvent -> {
             messageDialog.close();
@@ -430,10 +446,25 @@ public class ProductView extends VerticalLayout {
 
         grid.removeColumnByKey("id");
         //user.firstName null pointer hatası veriyor category.categoryType da aynı şekilde
-        grid.setColumns("user", "category", "city", "cityDistrict", "address", "price", "image", "description", "date");
+        Dialog productDialog=new Dialog();
+        grid.addItemClickListener(productItemClickEvent -> {
+
+            /*dialog.open();
+            dialog.add();*/
+            int x=productItemClickEvent.getItem().getNumberOfViews();
+            x=x+1;
+            productItemClickEvent.getItem().setNumberOfViews(x);
+            productService.save(productItemClickEvent.getItem());
+            //productItemClickEvent.getItem()=>return select row product
+            refreshData();
+
+        });
+
+        grid.setColumns("user", "category", "city", "cityDistrict", "address", "price", "image", "description", "date","numberOfViews");
 
         grid.addComponentColumn(item -> createMessageButton()).setHeader("Message");
         refreshData();
+
         add(btnEkle, filterGroup, grid);
     }
 

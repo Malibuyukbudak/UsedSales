@@ -23,6 +23,7 @@ public class Product {
     private Double price;
     private Byte[] image;
     private String description;
+    private int numberOfViews;
 
     @ManyToOne
     private Category category;
