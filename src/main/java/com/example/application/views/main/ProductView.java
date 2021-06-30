@@ -49,8 +49,9 @@ public class ProductView extends VerticalLayout {
     Dialog messageDialog = new Dialog();
     Dialog dialog = new Dialog();
 
-
-
+    Button sendMessageBtn = new Button("Send");
+    Button cancelMessageBtn = new Button("Cancel");
+    TextArea textMessage = new TextArea();
 
 
     public ProductView(ProductService productService, CategoryService categoryService, UserService userService, MessageService messageService) {
@@ -66,15 +67,14 @@ public class ProductView extends VerticalLayout {
         messageDialog.setHeight("300px");
 
         //Properties
-        //Date Begin
+            //Date Begin
         DatePicker valueDatePicker = new DatePicker();
         valueDatePicker.setLabel("Date");
         LocalDate now = LocalDate.now();
         valueDatePicker.setValue(now);
-        //Date Last
-
-
-        //City Begin
+            //Date Last
+        //-----------------------------------------------------------------------------------------------------------------
+            //City Begin
         ComboBox selectCity = new ComboBox<>("City");
         String[] cities = new String[]{"Adana", "Adiyaman", "Afyon", "Agri", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin", "Aydin",
                 "Balikesir", "Bartin", "Batman", "Bayburt", "Bilecik", "Bingol", "Bitlis", "Bolu", "Burdur", "Bursa", "Canakkale", "Cankiri",
@@ -86,9 +86,9 @@ public class ProductView extends VerticalLayout {
 
         selectCity.setItems(cities);
         selectCity.setPlaceholder("Enter City");
-        //City Last
-
-        //City District Begin
+            //City Last
+        //-----------------------------------------------------------------------------------------------------------------
+            //City District Begin
         ComboBox selectCityDistrict = new ComboBox<>("City District");
         selectCityDistrict.setPlaceholder("Enter City District");
 
@@ -218,9 +218,9 @@ public class ProductView extends VerticalLayout {
         String[] yozgat = new String[]{"Yozgat (il merkezi)", "Akdağmadeni", "Aydıncık", "Boğazlıyan", "Çandır", "Çayıralan", "Çekerek", "Kadışehri", "Saraykent",
                 "Sarıkaya", "Sorgun", "Şefaatli", "Yenifakılı", "Yerköy"};
         String[] zonguldak = new String[]{"Zonguldak (il merkezi)", "Alaplı", "Çaycuma", "Devrek", "Gökçebey", "Karadeniz Ereğli", "Kilimli", "Kozlu"};
+
         selectCity.addValueChangeListener(event -> {
             if (event.getValue().equals("Adana")) selectCityDistrict.setItems(adana);
-
             else if (event.getValue().equals("Adiyaman")) selectCityDistrict.setItems(adiyaman);
             else if (event.getValue().equals("Afyon")) selectCityDistrict.setItems(afyon);
             else if (event.getValue().equals("Agri")) selectCityDistrict.setItems(agri);
@@ -302,11 +302,10 @@ public class ProductView extends VerticalLayout {
             else if (event.getValue().equals("Yozgat")) selectCityDistrict.setItems(yozgat);
             else if (event.getValue().equals("Zonguldak")) selectCityDistrict.setItems(zonguldak);
 
-
         });
 
-        //City District Last
-
+            //City District Last
+            //-----------------------------------------------------------------------------------------------------------------
         //Adress,Price,Image,Description Begin
         TextField textAddress = new TextField("Address", "Enter Your Address");
 
@@ -316,9 +315,9 @@ public class ProductView extends VerticalLayout {
 
 
         TextField textDescription = new TextField("Description", "Enter Your Description");
-        //Adress,Price,Image,Description Last
-
-        //Category Begin
+            //Adress,Price,Image,Description Last
+            //-----------------------------------------------------------------------------------------------------------------
+            //Category Begin
         ComboBox selectCategory = new ComboBox<>("Category");
         List<Category> categories = categoryService.findAll();
         List<String> categoryFor = new ArrayList<>();
@@ -329,17 +328,17 @@ public class ProductView extends VerticalLayout {
         selectCategory.setItems(categoryFor);
         selectCategory.setPlaceholder("Enter Category");
 
-        //Category Last
-
-
-        //TextField textUser = new TextField("User", "Enter Your User");
-
-        //FormLayout
+            //Category Last
+        //-----------------------------------------------------------------------------------------------------------------
+            //TextField textUser = new TextField("User", "Enter Your User");
+        //-----------------------------------------------------------------------------------------------------------------
+            //FormLayout
         FormLayout formLayout = new FormLayout();
-        formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress,textDescription, valueDatePicker);
-        //FormLayout Last
-
+        formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress, textDescription, valueDatePicker);
+            //FormLayout Last
         //Properties Last
+
+        //-----------------------------------------------------------------------------------------------------------------
 
 
         //Filter Begin
@@ -356,7 +355,7 @@ public class ProductView extends VerticalLayout {
             refreshData(textFilter.getValue());
         });
         //Fİlter Last
-
+        //-----------------------------------------------------------------------------------------------------------------
         // Properties Save-Cancel Begin
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
@@ -369,8 +368,7 @@ public class ProductView extends VerticalLayout {
         btnSave.addClickListener(buttonClickEvent -> {
 
             Category category = new Category();
-            User user=new User();
-
+            User user = new User();
 
 
             category.setCategoryType(selectCategory.getValue().toString());
@@ -386,7 +384,7 @@ public class ProductView extends VerticalLayout {
             product.setCity(String.valueOf(selectCity.getValue()));
 
 
-            if (VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId") != null){
+            if (VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId") != null) {
                 user = userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get();
                 product.setUser(user);
 
@@ -408,6 +406,7 @@ public class ProductView extends VerticalLayout {
 
         // Properties Save-Cancel Last
 
+        //-----------------------------------------------------------------------------------------------------------------
 
         //Add Product click to dialog
         Button btnEkle = new Button("Add Product", VaadinIcon.INSERT.create());
@@ -417,65 +416,60 @@ public class ProductView extends VerticalLayout {
             dialog.open();
         });
 
-        //message begin
 
-        TextArea textMessage = new TextArea();
-        textMessage.setWidth("200px");
-        textMessage.setWidth("200px");
-            //message send
-        Button sendMessageBtn = new Button("Send");
-        sendMessageBtn.addClickListener(buttonClickEvent -> {
-            Message message1 = new Message();
-            message1.setMessageText(textMessage.getValue());
-            //message1.setUser(user);
-
-            messageService.save(message1);
-            messageDialog.close();
-
-        });
-
-            //message cancel
-        Button cancelMessageBtn = new Button("Cancel");
-        cancelMessageBtn.addClickListener(buttonClickEvent -> {
-            messageDialog.close();
-        });
-
-        messageDialog.add(textMessage, sendMessageBtn, cancelMessageBtn);
-        //
-        //message last
-
-        grid.removeColumnByKey("id");
         //user.firstName null pointer hatası veriyor category.categoryType da aynı şekilde
-        Dialog productDialog=new Dialog();
         grid.addItemClickListener(productItemClickEvent -> {
 
             /*dialog.open();
             dialog.add();*/
-            int x=productItemClickEvent.getItem().getNumberOfViews();
-            x=x+1;
+            int x = productItemClickEvent.getItem().getNumberOfViews();
+            x = x + 1;
             productItemClickEvent.getItem().setNumberOfViews(x);
-            productService.save(productItemClickEvent.getItem());
-            //productItemClickEvent.getItem()=>return select row product
+            productService.save(productItemClickEvent.getItem());//productItemClickEvent.getItem()=>return select row product
+
             refreshData();
 
         });
 
-        grid.setColumns("user", "category", "city", "cityDistrict", "address", "price", "image", "description", "date","numberOfViews");
-
-        grid.addComponentColumn(item -> createMessageButton()).setHeader("Message");
+        grid.setColumns("user", "category", "city", "cityDistrict", "address", "price", "image", "description", "date", "numberOfViews");
+        grid.addComponentColumn(item -> createMessageButton(grid, item)).setHeader("Message");
         refreshData();
 
         add(btnEkle, filterGroup, grid);
     }
 
 
-    private Button createMessageButton() {
+    private Button createMessageButton(Grid<Product> grid, Product item) {
         @SuppressWarnings("unchecked")
         Button button = new Button("Message");
         button.addClickListener(buttonClickEvent -> {
+
             messageDialog.open();
 
         });
+
+        textMessage.setWidth("200px");
+        textMessage.setWidth("200px");
+        //message send
+
+        //fonksiyon 4 kere çalıştığı için 4 kere mesaj butonu koyması doğru ancak
+        //message butonuna tıkladığında aynı şekilde 4 kere yazılıyor!!!!!!!!!!!!
+        sendMessageBtn.addClickListener(buttonClickEvent -> {
+            Message message1 = new Message();
+            message1.setMessageText(textMessage.getValue());
+            message1.setUser(item.getUser());
+            messageService.save(message1);
+            messageDialog.close();
+
+        });
+
+        //message cancel
+        cancelMessageBtn.addClickListener(buttonClickEvent -> {
+            messageDialog.close();
+        });
+
+
+        messageDialog.add(textMessage, sendMessageBtn, cancelMessageBtn);
         return button;
     }
 
