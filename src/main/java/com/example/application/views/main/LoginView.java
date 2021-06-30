@@ -25,7 +25,8 @@ public class LoginView extends VerticalLayout {
 
             if(result.getId()!=null){
                 VaadinSession.getCurrent().getSession().setAttribute("LoggedInUserId",result.getId());
-                UI.getCurrent().getPage().setLocation("/");
+                UI.getCurrent().getPage().setLocation("/product");
+
             }else{
                 loginForm.setError(true);
             }

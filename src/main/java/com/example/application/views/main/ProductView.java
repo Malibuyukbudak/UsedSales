@@ -4,6 +4,7 @@ package com.example.application.views.main;
 import com.example.application.models.Category;
 import com.example.application.models.Message;
 import com.example.application.models.Product;
+import com.example.application.models.User;
 import com.example.application.services.CategoryService;
 import com.example.application.services.MessageService;
 import com.example.application.services.ProductService;
@@ -20,7 +21,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 
+import javax.management.Notification;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,7 @@ public class ProductView extends VerticalLayout {
     Grid<Product> grid = new Grid<>(Product.class);
     Dialog messageDialog = new Dialog();
     Dialog dialog = new Dialog();
+
 
 
     public ProductView(ProductService productService, CategoryService categoryService, UserService userService, MessageService messageService) {
@@ -52,6 +56,7 @@ public class ProductView extends VerticalLayout {
         //Properties
         //Date Begin
         DatePicker valueDatePicker = new DatePicker();
+        valueDatePicker.setLabel("Date");
         LocalDate now = LocalDate.now();
         valueDatePicker.setValue(now);
         //Date Last
@@ -314,11 +319,11 @@ public class ProductView extends VerticalLayout {
         //Category Last
 
 
-        TextField textUser = new TextField("User", "Enter Your User");
+        //TextField textUser = new TextField("User", "Enter Your User");
 
         //FormLayout
         FormLayout formLayout = new FormLayout();
-        formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress, textImage, textDescription, textUser, valueDatePicker);
+        formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress, textImage, textDescription, valueDatePicker);
         //FormLayout Last
 
         //Properties Last
@@ -351,6 +356,8 @@ public class ProductView extends VerticalLayout {
         btnSave.addClickListener(buttonClickEvent -> {
             Product product = new Product();
             Category category = new Category();
+            User user=new User();
+
 
             category.setCategoryType(selectCategory.getValue().toString());
             product.setPrice(Double.valueOf(textPrice.getValue()));
@@ -363,13 +370,17 @@ public class ProductView extends VerticalLayout {
             product.setDescription(textDescription.getValue());
             product.setDate(valueDatePicker.getValue());
             product.setCity(String.valueOf(selectCity.getValue()));
-            //product.setUser();
+
+            if (VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId") != null){
+                user = userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get();
+                product.setUser(user);
+            }
 
             productService.save(product);
             refreshData(textFilter.getValue());
             dialog.close();
-
         });
+
 
         btnCancel.addClickListener(buttonClickEvent -> {
             dialog.close();
@@ -438,6 +449,7 @@ public class ProductView extends VerticalLayout {
     }
 
     private void refreshData() {
+        //User and Category Name!!!!
         List<Product> productList = new ArrayList<>();
         productList.addAll(productService.getList());
         grid.setItems(productList);
