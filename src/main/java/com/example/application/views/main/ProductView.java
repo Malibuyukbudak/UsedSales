@@ -22,10 +22,11 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
-
 import javax.imageio.ImageIO;
 import javax.management.Notification;
 import java.awt.image.BufferedImage;
@@ -49,9 +50,12 @@ public class ProductView extends VerticalLayout {
     Dialog messageDialog = new Dialog();
     Dialog dialog = new Dialog();
 
+
     Button sendMessageBtn = new Button("Send");
     Button cancelMessageBtn = new Button("Cancel");
     TextArea textMessage = new TextArea();
+
+
 
 
     public ProductView(ProductService productService, CategoryService categoryService, UserService userService, MessageService messageService) {
@@ -329,9 +333,10 @@ public class ProductView extends VerticalLayout {
         selectCategory.setPlaceholder("Enter Category");
 
             //Category Last
-        //-----------------------------------------------------------------------------------------------------------------
-            //TextField textUser = new TextField("User", "Enter Your User");
-        //-----------------------------------------------------------------------------------------------------------------
+
+
+
+
             //FormLayout
         FormLayout formLayout = new FormLayout();
         formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress, textDescription, valueDatePicker);
@@ -369,7 +374,6 @@ public class ProductView extends VerticalLayout {
 
             Category category = new Category();
             User user = new User();
-
 
             category.setCategoryType(selectCategory.getValue().toString());
             product.setPrice(Double.valueOf(textPrice.getValue()));
@@ -417,22 +421,25 @@ public class ProductView extends VerticalLayout {
         });
 
 
-        //user.firstName null pointer hatası veriyor category.categoryType da aynı şekilde
+        //ProductView
         grid.addItemClickListener(productItemClickEvent -> {
 
             /*dialog.open();
             dialog.add();*/
-            int x = productItemClickEvent.getItem().getNumberOfViews();
-            x = x + 1;
-            productItemClickEvent.getItem().setNumberOfViews(x);
-            productService.save(productItemClickEvent.getItem());//productItemClickEvent.getItem()=>return select row product
 
-            refreshData();
+                int x = productItemClickEvent.getItem().getNumberOfViews();
+                x = x + 1;
+                productItemClickEvent.getItem().setNumberOfViews(x);
+                productService.save(productItemClickEvent.getItem());//productItemClickEvent.getItem()=>return select row product
+
+
+
+            //refreshData();
 
         });
-
+        //user.firstName null pointer hatası veriyor category.categoryType da aynı şekilde
         grid.setColumns("user", "category", "city", "cityDistrict", "address", "price", "image", "description", "date", "numberOfViews");
-        grid.addComponentColumn(item -> createMessageButton(grid, item)).setHeader("Message");
+        grid.addComponentColumn(item-> createMessageButton(grid, item)).setHeader("Message");
         refreshData();
 
         add(btnEkle, filterGroup, grid);
@@ -458,6 +465,7 @@ public class ProductView extends VerticalLayout {
             Message message1 = new Message();
             message1.setMessageText(textMessage.getValue());
             message1.setUser(item.getUser());
+            //System.out.println(item.getUser());
             messageService.save(message1);
             messageDialog.close();
 
@@ -476,7 +484,7 @@ public class ProductView extends VerticalLayout {
     private void refreshData() {
         //User and Category Name!!!!
         List<Product> productList = new ArrayList<>();
-        productList.addAll(productService.getList());
+        productList.addAll(productService.findAll());
         grid.setItems(productList);
     }
 

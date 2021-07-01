@@ -74,6 +74,7 @@ public class BootstrapData implements CommandLineRunner {
         userService.save(user4);
 
 
+
         //Products
 
         //Product1
@@ -86,6 +87,7 @@ public class BootstrapData implements CommandLineRunner {
         product1.setPrice(100000.0);
         product1.setCategory(car);
         product1.setUser(user1);
+        product1.setNumberOfViews(0);
         productService.save(product1);
 
         //Product2
@@ -99,6 +101,7 @@ public class BootstrapData implements CommandLineRunner {
         product2.setPrice(250.0);
         product2.setCategory(furniture);
         product2.setUser(user2);
+        product2.setNumberOfViews(0);
         productService.save(product2);
 
         //Product3
@@ -112,6 +115,7 @@ public class BootstrapData implements CommandLineRunner {
         product3.setPrice(4600.0);
         product3.setCategory(electronic);
         product3.setUser(user3);
+        product3.setNumberOfViews(0);
         productService.save(product3);
 
         //Product4
@@ -125,6 +129,7 @@ public class BootstrapData implements CommandLineRunner {
         product4.setPrice(450.0);
         product4.setCategory(furniture);
         product4.setUser(user4);
+        product4.setNumberOfViews(0);
         productService.save(product4);
 
 

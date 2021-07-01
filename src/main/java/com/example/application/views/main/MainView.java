@@ -14,7 +14,7 @@ public class MainView extends VerticalLayout {
 
         if(VaadinSession.getCurrent().getSession().getAttribute("LoggedInSystemUserId")==null){
             if (UI.getCurrent() != null) {
-                UI.getCurrent().getPage().setLocation("/login");
+                UI.getCurrent().getPage().setLocation("/register");
             }
         }
         H1 header=new H1("Main view");
