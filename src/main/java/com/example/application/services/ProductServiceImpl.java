@@ -1,7 +1,7 @@
 package com.example.application.services;
 
+import com.example.application.models.Category;
 import com.example.application.models.Product;
-import com.example.application.models.User;
 import com.example.application.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 

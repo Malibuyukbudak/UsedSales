@@ -4,6 +4,7 @@ import com.example.application.models.User;
 import com.example.application.services.UserService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -17,13 +18,14 @@ public class RegisterView extends VerticalLayout {
     public RegisterView(UserService userService) {
 
         this.userService = userService;
+        H2 header=new H2("Sign Up");
 
-        TextField txtFirstName = new TextField("First Name");
-        TextField txtLastName = new TextField("Last Name");
+        TextField txtFirstName = new TextField("İsim");
+        TextField txtLastName = new TextField("Soyisim");
         TextField txtEmail = new TextField("Email");
-        PasswordField txtPassword = new PasswordField("Password");
+        PasswordField txtPassword = new PasswordField("Şifre");
 
-        Button signUpBtn = new Button("Sign Up");
+        Button signUpBtn = new Button("Kayıt Ol");
 
         signUpBtn.addClickListener(buttonClickEvent -> {
             User user=new User();
@@ -34,14 +36,14 @@ public class RegisterView extends VerticalLayout {
             userService.save(user);
             UI.getCurrent().getPage().setLocation("/login");
         });
-        Button signInBtn=new Button("Sign In");
+        Button signInBtn=new Button("Giriş Yap");
         HorizontalLayout horizontalLayout=new HorizontalLayout();
         horizontalLayout.add(signUpBtn,signInBtn);
 
         signInBtn.addClickListener(buttonClickEvent -> {
             UI.getCurrent().getPage().setLocation("/login");
         });
-        add(txtFirstName, txtLastName, txtEmail, txtPassword, horizontalLayout);
+        add(header,txtFirstName, txtLastName, txtEmail, txtPassword, horizontalLayout);
 
 
     }

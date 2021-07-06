@@ -431,9 +431,6 @@ public class ProductView extends VerticalLayout {
                 x = x + 1;
                 productItemClickEvent.getItem().setNumberOfViews(x);
                 productService.save(productItemClickEvent.getItem());//productItemClickEvent.getItem()=>return select row product
-
-
-
             //refreshData();
 
         });
@@ -484,7 +481,7 @@ public class ProductView extends VerticalLayout {
     private void refreshData() {
         //User and Category Name!!!!
         List<Product> productList = new ArrayList<>();
-        productList.addAll(productService.findAll());
+        productList.addAll(productService.getList());
         grid.setItems(productList);
     }
 
