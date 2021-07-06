@@ -17,6 +17,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -51,12 +52,6 @@ public class ProductView extends VerticalLayout {
     Dialog dialog = new Dialog();
 
 
-    Button sendMessageBtn = new Button("Send");
-    Button cancelMessageBtn = new Button("Cancel");
-    TextArea textMessage = new TextArea();
-
-
-
 
     public ProductView(ProductService productService, CategoryService categoryService, UserService userService, MessageService messageService) {
         this.productService = productService;
@@ -73,13 +68,13 @@ public class ProductView extends VerticalLayout {
         //Properties
             //Date Begin
         DatePicker valueDatePicker = new DatePicker();
-        valueDatePicker.setLabel("Date");
+        valueDatePicker.setLabel("Tarih");
         LocalDate now = LocalDate.now();
         valueDatePicker.setValue(now);
             //Date Last
         //-----------------------------------------------------------------------------------------------------------------
             //City Begin
-        ComboBox selectCity = new ComboBox<>("City");
+        ComboBox selectCity = new ComboBox<>("Şehir");
         String[] cities = new String[]{"Adana", "Adiyaman", "Afyon", "Agri", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin", "Aydin",
                 "Balikesir", "Bartin", "Batman", "Bayburt", "Bilecik", "Bingol", "Bitlis", "Bolu", "Burdur", "Bursa", "Canakkale", "Cankiri",
                 "Corum", "Denizli", "Diyarbakir", "Duzce", "Edirne", "Elazig", "Erzincan", "Erzurum", "Eskisehir", "Gaziantep", "Giresun",
@@ -93,7 +88,7 @@ public class ProductView extends VerticalLayout {
             //City Last
         //-----------------------------------------------------------------------------------------------------------------
             //City District Begin
-        ComboBox selectCityDistrict = new ComboBox<>("City District");
+        ComboBox selectCityDistrict = new ComboBox<>("İlçe");
         selectCityDistrict.setPlaceholder("Enter City District");
 
         String[] adana = new String[]{"Aladağ", "Ceyhan", "Çukurova", "Feke", "İmamoğlu", "Karaisalı", "Karataş", "Kozan",
@@ -311,18 +306,18 @@ public class ProductView extends VerticalLayout {
             //City District Last
             //-----------------------------------------------------------------------------------------------------------------
         //Adress,Price,Image,Description Begin
-        TextField textAddress = new TextField("Address", "Enter Your Address");
+        TextField textAddress = new TextField("Adres", "Enter Your Address");
 
-        TextField textPrice = new TextField("Price", "Enter Your Price");
+        TextField textPrice = new TextField("Fiyat", "Enter Your Price");
 
         //Image image = new Image();
 
 
-        TextField textDescription = new TextField("Description", "Enter Your Description");
+        TextField textDescription = new TextField("Açıklama", "Enter Your Description");
             //Adress,Price,Image,Description Last
             //-----------------------------------------------------------------------------------------------------------------
             //Category Begin
-        ComboBox selectCategory = new ComboBox<>("Category");
+        ComboBox selectCategory = new ComboBox<>("Kategori");
         List<Category> categories = categoryService.findAll();
         List<String> categoryFor = new ArrayList<>();
         for (Category categoryType : categories) {
@@ -347,10 +342,10 @@ public class ProductView extends VerticalLayout {
 
 
         //Filter Begin
-        Button btnFilter = new Button("Seach", VaadinIcon.SEARCH.create());
+        Button btnFilter = new Button("Ara", VaadinIcon.SEARCH.create());
 
         TextField textFilter = new TextField();
-        textFilter.setPlaceholder("Key");
+        textFilter.setPlaceholder("Kelime Girin");
 
         HorizontalLayout filterGroup = new HorizontalLayout();
 
@@ -366,8 +361,8 @@ public class ProductView extends VerticalLayout {
         horizontalLayout.setSpacing(true);
         horizontalLayout.setMargin(true);
 
-        Button btnSave = new Button("Save");
-        Button btnCancel = new Button("Cancel");
+        Button btnSave = new Button("Kaydet");
+        Button btnCancel = new Button("Çık");
 
         Product product = new Product();
         btnSave.addClickListener(buttonClickEvent -> {
@@ -376,16 +371,21 @@ public class ProductView extends VerticalLayout {
             User user = new User();
 
             category.setCategoryType(selectCategory.getValue().toString());
+            selectCategory.setValue("");
             product.setPrice(Double.valueOf(textPrice.getValue()));
+            textPrice.setValue("");
             product.setCityDistrict(selectCityDistrict.getValue().toString());
-
+            selectCityDistrict.setValue("");
             categoryService.save(category);
 
             product.setCategory(category);
             product.setAddress(textAddress.getValue());
+            textAddress.setValue("");
             product.setDescription(textDescription.getValue());
+            textDescription.setValue("");
             product.setDate(valueDatePicker.getValue());
             product.setCity(String.valueOf(selectCity.getValue()));
+            selectCity.setValue("");
 
 
             if (VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId") != null) {
@@ -413,7 +413,7 @@ public class ProductView extends VerticalLayout {
         //-----------------------------------------------------------------------------------------------------------------
 
         //Add Product click to dialog
-        Button btnEkle = new Button("Add Product", VaadinIcon.INSERT.create());
+        Button btnEkle = new Button("Urun Ekle", VaadinIcon.INSERT.create());
 
         btnEkle.addClickListener(buttonClickEvent -> {
 
@@ -422,16 +422,39 @@ public class ProductView extends VerticalLayout {
 
 
         //ProductView
+        Dialog clickDialog=new Dialog();
+        clickDialog.setHeight("300px");
+        clickDialog.setWidth("500px");
+
         grid.addItemClickListener(productItemClickEvent -> {
 
-            /*dialog.open();
-            dialog.add();*/
+
+            TextField txtUser1=new TextField();
+            txtUser1.setLabel("İsim");
+            txtUser1.setValue(productItemClickEvent.getItem().getUser().getFirstName().toString());
+            TextField txtCity1=new TextField();
+            txtCity1.setLabel("Şehir");
+            txtCity1.setValue(productItemClickEvent.getItem().getCity().toString());
+            TextField txtCategory1 = new TextField();
+            txtCategory1.setLabel("Kategori");
+            txtCategory1.setValue(productItemClickEvent.getItem().getCategory().getCategoryType().toString());
+            clickDialog.open();
+            Button cancelclickBtn=new Button("Cancel");
+
+            clickDialog.add(txtUser1,txtCategory1,txtCity1,cancelclickBtn);
+
+            cancelclickBtn.addClickListener(buttonClickEvent -> {
+                clickDialog.remove(txtCategory1,txtUser1,txtCity1,cancelclickBtn);
+                refreshData();
+                clickDialog.close();
+            });
+
 
                 int x = productItemClickEvent.getItem().getNumberOfViews();
                 x = x + 1;
                 productItemClickEvent.getItem().setNumberOfViews(x);
                 productService.save(productItemClickEvent.getItem());//productItemClickEvent.getItem()=>return select row product
-            //refreshData();
+
 
         });
         //user.firstName null pointer hatası veriyor category.categoryType da aynı şekilde
@@ -445,36 +468,41 @@ public class ProductView extends VerticalLayout {
 
     private Button createMessageButton(Grid<Product> grid, Product item) {
         @SuppressWarnings("unchecked")
-        Button button = new Button("Message");
+        Button button = new Button("Mesaj");
+
+        Button sendMessageBtn = new Button("Send");
+        Button cancelMessageBtn = new Button("Cancel");
+        TextArea textMessage = new TextArea();
+
         button.addClickListener(buttonClickEvent -> {
 
             messageDialog.open();
-
+            messageDialog.add(textMessage, sendMessageBtn, cancelMessageBtn);
         });
 
         textMessage.setWidth("200px");
         textMessage.setWidth("200px");
-        //message send
 
-        //fonksiyon 4 kere çalıştığı için 4 kere mesaj butonu koyması doğru ancak
-        //message butonuna tıkladığında aynı şekilde 4 kere yazılıyor!!!!!!!!!!!!
         sendMessageBtn.addClickListener(buttonClickEvent -> {
             Message message1 = new Message();
             message1.setMessageText(textMessage.getValue());
             message1.setUser(item.getUser());
-            //System.out.println(item.getUser());
             messageService.save(message1);
+            textMessage.setValue("");
+            messageDialog.remove(textMessage,sendMessageBtn,cancelMessageBtn);
             messageDialog.close();
 
         });
 
         //message cancel
         cancelMessageBtn.addClickListener(buttonClickEvent -> {
+            messageDialog.remove(textMessage,sendMessageBtn,cancelMessageBtn);
+            textMessage.setValue("");
             messageDialog.close();
         });
 
 
-        messageDialog.add(textMessage, sendMessageBtn, cancelMessageBtn);
+
         return button;
     }
 
