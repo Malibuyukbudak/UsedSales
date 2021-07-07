@@ -9,6 +9,7 @@ import com.example.application.services.CategoryService;
 import com.example.application.services.MessageService;
 import com.example.application.services.ProductService;
 import com.example.application.services.UserService;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -16,24 +17,29 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+import org.apache.commons.compress.utils.IOUtils;
+import org.springframework.util.FastByteArrayOutputStream;
+
 import javax.imageio.ImageIO;
 import javax.management.Notification;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDate;
@@ -47,6 +53,9 @@ public class ProductView extends VerticalLayout {
     private final CategoryService categoryService;
     private final UserService userService;
     private final MessageService messageService;
+
+
+
     Grid<Product> grid = new Grid<>(Product.class);
     Dialog messageDialog = new Dialog();
     Dialog dialog = new Dialog();
@@ -72,7 +81,29 @@ public class ProductView extends VerticalLayout {
         LocalDate now = LocalDate.now();
         valueDatePicker.setValue(now);
             //Date Last
+
+
         //-----------------------------------------------------------------------------------------------------------------
+            //image begin
+        MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
+        Upload upload = new Upload(buffer);
+        Div output = new Div();
+        upload.setReceiver(buffer);
+        upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
+
+        upload.addSucceededListener(event -> {
+            try {
+                byte[] imageBytes = IOUtils.toByteArray(buffer.getInputStream(event.getFileName()));
+                output.removeAll();
+                showOutput(event.getFileName(),upload,output);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+
+
+            //image last
             //City Begin
         ComboBox selectCity = new ComboBox<>("Şehir");
         String[] cities = new String[]{"Adana", "Adiyaman", "Afyon", "Agri", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin", "Aydin",
@@ -334,7 +365,7 @@ public class ProductView extends VerticalLayout {
 
             //FormLayout
         FormLayout formLayout = new FormLayout();
-        formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress, textDescription, valueDatePicker);
+        formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress, textDescription, valueDatePicker,upload,output);
             //FormLayout Last
         //Properties Last
 
@@ -345,7 +376,7 @@ public class ProductView extends VerticalLayout {
         Button btnFilter = new Button("Ara", VaadinIcon.SEARCH.create());
 
         TextField textFilter = new TextField();
-        textFilter.setPlaceholder("Kelime Girin");
+        textFilter.setPlaceholder("Kelime girin");
 
         HorizontalLayout filterGroup = new HorizontalLayout();
 
@@ -388,6 +419,8 @@ public class ProductView extends VerticalLayout {
             selectCity.setValue("");
 
 
+
+
             if (VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId") != null) {
                 user = userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get();
                 product.setUser(user);
@@ -413,7 +446,7 @@ public class ProductView extends VerticalLayout {
         //-----------------------------------------------------------------------------------------------------------------
 
         //Add Product click to dialog
-        Button btnEkle = new Button("Urun Ekle", VaadinIcon.INSERT.create());
+        Button btnEkle = new Button("Ürün Ekle", VaadinIcon.INSERT.create());
 
         btnEkle.addClickListener(buttonClickEvent -> {
 
@@ -421,30 +454,60 @@ public class ProductView extends VerticalLayout {
         });
 
 
-        //ProductView
+        //ProductView and ClickItem
         Dialog clickDialog=new Dialog();
-        clickDialog.setHeight("300px");
+        clickDialog.setHeight("1000px");
         clickDialog.setWidth("500px");
 
         grid.addItemClickListener(productItemClickEvent -> {
 
-
-            TextField txtUser1=new TextField();
+            TextArea txtUser1=new TextArea();
             txtUser1.setLabel("İsim");
             txtUser1.setValue(productItemClickEvent.getItem().getUser().getFirstName().toString());
-            TextField txtCity1=new TextField();
+            txtUser1.setReadOnly(true);
+
+            TextArea txtCity1=new TextArea();
             txtCity1.setLabel("Şehir");
             txtCity1.setValue(productItemClickEvent.getItem().getCity().toString());
-            TextField txtCategory1 = new TextField();
+            txtCity1.setReadOnly(true);
+
+            TextArea txtCategory1 = new TextArea();
             txtCategory1.setLabel("Kategori");
             txtCategory1.setValue(productItemClickEvent.getItem().getCategory().getCategoryType().toString());
-            clickDialog.open();
-            Button cancelclickBtn=new Button("Cancel");
+            txtCategory1.setReadOnly(true);
 
-            clickDialog.add(txtUser1,txtCategory1,txtCity1,cancelclickBtn);
+            TextArea txtAdress1=new TextArea();
+            txtAdress1.setLabel("Adres");
+            txtAdress1.setValue(productItemClickEvent.getItem().getAddress().toString());
+            txtAdress1.setReadOnly(true);
+
+            TextArea txtCityDistrict1=new TextArea();
+            txtCityDistrict1.setLabel("İlçe");
+            txtCityDistrict1.setValue(productItemClickEvent.getItem().getCityDistrict().toString());
+            txtCityDistrict1.setReadOnly(true);
+
+            TextArea txtPrice1=new TextArea();
+            txtPrice1.setLabel("Fiyat");
+            txtPrice1.setValue(productItemClickEvent.getItem().getPrice().toString());
+            txtPrice1.setReadOnly(true);
+
+            TextArea txtDescription1=new TextArea();
+            txtDescription1.setLabel("Açıklama");
+            txtDescription1.setValue(productItemClickEvent.getItem().getDescription().toString());
+            txtDescription1.setReadOnly(true);
+
+            TextArea txtNumberofView1=new TextArea();
+            txtNumberofView1.setLabel("Görüntülenme Sayısı");
+            txtNumberofView1.setValue(productItemClickEvent.getItem().getNumberOfViews().toString());
+            txtNumberofView1.setReadOnly(true);
+
+            clickDialog.open();
+            Button cancelclickBtn=new Button("Kapat");
+
+            clickDialog.add(txtUser1,txtCategory1,txtCity1,txtCityDistrict1,txtAdress1,txtPrice1,txtDescription1,txtNumberofView1, cancelclickBtn);
 
             cancelclickBtn.addClickListener(buttonClickEvent -> {
-                clickDialog.remove(txtCategory1,txtUser1,txtCity1,cancelclickBtn);
+                clickDialog.remove(txtUser1,txtCity1,txtCategory1,txtAdress1,txtCityDistrict1,txtPrice1,txtDescription1,txtNumberofView1, cancelclickBtn);
                 refreshData();
                 clickDialog.close();
             });
@@ -457,21 +520,23 @@ public class ProductView extends VerticalLayout {
 
 
         });
-        //user.firstName null pointer hatası veriyor category.categoryType da aynı şekilde
-        grid.setColumns("user", "category", "city", "cityDistrict", "address", "price", "image", "description", "date", "numberOfViews");
+        grid.setColumns("user.firstName", "category.categoryType", "city", "cityDistrict", "address", "price", "image", "description", "date", "numberOfViews");
         grid.addComponentColumn(item-> createMessageButton(grid, item)).setHeader("Message");
+
         refreshData();
 
         add(btnEkle, filterGroup, grid);
     }
 
 
+
+
     private Button createMessageButton(Grid<Product> grid, Product item) {
         @SuppressWarnings("unchecked")
         Button button = new Button("Mesaj");
 
-        Button sendMessageBtn = new Button("Send");
-        Button cancelMessageBtn = new Button("Cancel");
+        Button sendMessageBtn = new Button("Gönder");
+        Button cancelMessageBtn = new Button("Kapat");
         TextArea textMessage = new TextArea();
 
         button.addClickListener(buttonClickEvent -> {
@@ -500,9 +565,6 @@ public class ProductView extends VerticalLayout {
             textMessage.setValue("");
             messageDialog.close();
         });
-
-
-
         return button;
     }
 
@@ -518,4 +580,13 @@ public class ProductView extends VerticalLayout {
         productList.addAll(productService.getList(filter));
         grid.setItems(productList);
     }
+    private void showOutput(String text, Component content,
+                            HasComponents outputContainer) {
+        HtmlComponent p = new HtmlComponent(Tag.P);
+        p.getElement().setText(text);
+        outputContainer.add(p);
+        outputContainer.add(content);
+    }
+
+
 }

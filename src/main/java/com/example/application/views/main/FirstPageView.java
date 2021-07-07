@@ -21,7 +21,7 @@ public class FirstPageView extends VerticalLayout {
         this.productService = productService;
         grid.setColumns("user.firstName", "category.categoryType", "city", "cityDistrict", "address", "price", "image", "description", "date", "numberOfViews");
         refreshData();
-        Button signInButton=new Button("Giris Yap");
+        Button signInButton=new Button("Giriş Yap");
         Button signUpButton=new Button("Kayıt Ol");
         signInButton.addClickListener(buttonClickEvent -> {
             UI.getCurrent().getPage().setLocation("/login");

@@ -29,16 +29,18 @@ public class BootstrapData implements CommandLineRunner {
 
         //CATEGORY
         Category car=new Category();
-        car.setCategoryType("Car");
+        car.setCategoryType("Araba");
         categoryService.save(car);
 
         Category electronic=new Category();
-        electronic.setCategoryType("Electronic");
+        electronic.setCategoryType("Elektronik");
         categoryService.save(electronic);
 
         Category furniture=new Category();
-        furniture.setCategoryType("Furniture");
+        furniture.setCategoryType("Ev Eşyaları");
         categoryService.save(furniture);
+
+
 
         //Users
         //User1
