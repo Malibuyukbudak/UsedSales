@@ -1,9 +1,6 @@
 package com.example.application.services;
 
 import com.example.application.models.Product;
-import com.example.application.models.User;
-
-
 import java.util.List;
 import java.util.Set;
 
@@ -16,7 +13,8 @@ public interface ProductService {
 
     Set<Product> getList();
     Set<Product> getList(String filter);
-
+    Set<Product> getList(Long id);
+    Set<Product> getListCategory(String categoryType);
 
 
 }

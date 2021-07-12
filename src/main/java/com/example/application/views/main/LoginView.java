@@ -3,7 +3,6 @@ package com.example.application.views.main;
 import com.example.application.models.User;
 import com.example.application.services.UserService;
 import com.vaadin.flow.component.UI;
-
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;

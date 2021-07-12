@@ -1,7 +1,6 @@
 package com.example.application.services;
 
 import com.example.application.models.Message;
-
 import java.util.List;
 
 public interface MessageService {

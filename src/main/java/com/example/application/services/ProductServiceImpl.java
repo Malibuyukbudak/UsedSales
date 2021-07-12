@@ -1,10 +1,8 @@
 package com.example.application.services;
 
-import com.example.application.models.Category;
 import com.example.application.models.Product;
 import com.example.application.repository.ProductRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,8 +14,10 @@ public class ProductServiceImpl implements ProductService{
 
     private final ProductRepository productRepository;
 
+
     public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
+
     }
 
     @Override
@@ -55,5 +55,20 @@ public class ProductServiceImpl implements ProductService{
         productRepository.findByDescriptionContainingIgnoreCase(filter).iterator().forEachRemaining(productSet::add);
         return productSet;
     }
+
+    @Override
+    public Set<Product> getList(Long id) {
+        Set<Product> productSet=new HashSet<>();
+        productRepository.findByUserId(id).iterator().forEachRemaining(productSet::add);
+        return productSet;
+    }
+
+    @Override
+    public Set<Product> getListCategory(String categoryType) {
+        Set<Product> productSet=new HashSet<>();
+        productRepository.findByCategoryCategoryType(categoryType).iterator().forEachRemaining(productSet::add);
+        return productSet;
+    }
+
 
 }

@@ -3,7 +3,6 @@ package com.example.application.services;
 import com.example.application.models.Message;
 import com.example.application.repository.MessageRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;

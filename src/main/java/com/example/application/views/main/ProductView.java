@@ -1,6 +1,5 @@
 package com.example.application.views.main;
 
-
 import com.example.application.models.Category;
 import com.example.application.models.Message;
 import com.example.application.models.Product;
@@ -28,7 +27,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 import org.apache.commons.compress.utils.IOUtils;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -44,19 +42,17 @@ public class ProductView extends VerticalLayout {
     private final UserService userService;
     private final MessageService messageService;
 
+    Long itemIdForEdition = 0L;
 
     Grid<Product> grid = new Grid<>(Product.class);
     Dialog messageDialog = new Dialog();
     Dialog dialog = new Dialog();
-
-
 
     public ProductView(ProductService productService, CategoryService categoryService, UserService userService, MessageService messageService) {
         this.productService = productService;
         this.categoryService = categoryService;
         this.userService = userService;
         this.messageService = messageService;
-
 
         dialog.setModal(true);
         //messageDialog.setModal(true);
@@ -335,14 +331,13 @@ public class ProductView extends VerticalLayout {
 
         //City District Last
         //-----------------------------------------------------------------------------------------------------------------
-        //Adress,Price,Image,Description Begin
+        //Adress,Price,Description Begin
         TextField textAddress = new TextField("Adres", "Enter Your Address");
 
         TextField textPrice = new TextField("Fiyat", "Enter Your Price");
 
-
         TextField textDescription = new TextField("Açıklama", "Enter Your Description");
-        //Adress,Price,Image,Description Last
+        //Adress,Price,Description Last
         //-----------------------------------------------------------------------------------------------------------------
         //Category Begin
         ComboBox selectCategory = new ComboBox<>("Kategori");
@@ -357,22 +352,20 @@ public class ProductView extends VerticalLayout {
 
         //Category Last
 
-
         //FormLayout
         FormLayout formLayout = new FormLayout();
-        formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress, textDescription, valueDatePicker, upload, image);
+        formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress, textDescription, /*valueDatePicker,*/ upload, image);
 
         //FormLayout Last
         //Properties Last
 
         //-----------------------------------------------------------------------------------------------------------------
 
-
         //Filter Begin
         Button btnFilter = new Button("Ara", VaadinIcon.SEARCH.create());
 
         TextField textFilter = new TextField();
-        textFilter.setPlaceholder("Kelime girin");
+        textFilter.setPlaceholder("Ürün girin");
 
         HorizontalLayout filterGroup = new HorizontalLayout();
 
@@ -380,6 +373,7 @@ public class ProductView extends VerticalLayout {
 
         btnFilter.addClickListener(buttonClickEvent -> {
             refreshData(textFilter.getValue());
+            textFilter.setValue("");
         });
         //Fİlter Last
         //-----------------------------------------------------------------------------------------------------------------
@@ -415,6 +409,7 @@ public class ProductView extends VerticalLayout {
             product.setCity(String.valueOf(selectCity.getValue()));
             selectCity.setValue("");
             product.setImage(image.getSrc().getBytes(StandardCharsets.UTF_8));
+            product.setId(itemIdForEdition);
             image.setSrc("");
 
 
@@ -427,6 +422,7 @@ public class ProductView extends VerticalLayout {
             productService.save(product);
             refreshData(textFilter.getValue());
             dialog.close();
+
         });
 
 
@@ -442,19 +438,16 @@ public class ProductView extends VerticalLayout {
 
         //-----------------------------------------------------------------------------------------------------------------
 
-        //Add Product click to dialog
-        Button btnEkle = new Button("Ürün Ekle", VaadinIcon.INSERT.create());
-
-        btnEkle.addClickListener(buttonClickEvent -> {
-
-            dialog.open();
-        });
-
-
         //ProductView and ClickItem
         Dialog clickDialog = new Dialog();
         clickDialog.setHeight("1000px");
         clickDialog.setWidth("500px");
+        //Add Product click to dialog
+        Button btnEkle = new Button("Ürün Ekle", VaadinIcon.INSERT.create());
+        btnEkle.addClickListener(buttonClickEvent -> {
+            dialog.open();
+        });
+
 
         grid.addItemClickListener(productItemClickEvent -> {
 
@@ -498,6 +491,17 @@ public class ProductView extends VerticalLayout {
                     txtNumberofView1.setValue(productItemClickEvent.getItem().getNumberOfViews().toString());
                     txtNumberofView1.setReadOnly(true);
 
+                    Button updateClickBtn = new Button("Güncelle");
+                    updateClickBtn.addClickListener(buttonClickEvent -> {
+                        itemIdForEdition = productItemClickEvent.getItem().getId();
+                        selectCity.setValue(productItemClickEvent.getItem().getCity());
+                        selectCategory.setValue(productItemClickEvent.getItem().getCategory().getCategoryType());
+                        selectCityDistrict.setValue(productItemClickEvent.getItem().getCityDistrict());
+                        textAddress.setValue(productItemClickEvent.getItem().getAddress());
+                        textDescription.setValue(productItemClickEvent.getItem().getDescription());
+                        textPrice.setValue(productItemClickEvent.getItem().getPrice().toString());
+                        dialog.open();//formlayout
+                    });
 
 
                     clickDialog.open();
@@ -535,18 +539,22 @@ public class ProductView extends VerticalLayout {
                         messageDialog.close();
                     });
 
-                    clickDialog.add(txtUser1, txtCategory1, txtCity1, txtCityDistrict1, txtAdress1, txtPrice1, txtDescription1, txtNumberofView1,cancelclickBtn);
+                    clickDialog.add(txtUser1, txtCategory1, txtCity1, txtCityDistrict1, txtAdress1, txtPrice1, txtDescription1, txtNumberofView1, cancelclickBtn);
                     //kendi girişe mesaj atamasın
                     if (productItemClickEvent.getItem().getUser().getId() != userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId()) {
                         clickDialog.add(messageClickBtn);
+                    } else {
+                        clickDialog.add(updateClickBtn);
                     }
 
 
                     cancelclickBtn.addClickListener(buttonClickEvent -> {
-                        clickDialog.remove(txtUser1, txtCity1, txtCategory1, txtAdress1, txtCityDistrict1, txtPrice1, txtDescription1, txtNumberofView1,cancelclickBtn);
+                        clickDialog.remove(txtUser1, txtCity1, txtCategory1, txtAdress1, txtCityDistrict1, txtPrice1, txtDescription1, txtNumberofView1, cancelclickBtn);
                         //kendi girişinde dialogdan silinsin.
                         if (productItemClickEvent.getItem().getUser().getId() != userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId()) {
                             clickDialog.remove(messageClickBtn);
+                        } else {
+                            clickDialog.remove(updateClickBtn);
                         }
 
 
@@ -561,11 +569,46 @@ public class ProductView extends VerticalLayout {
 
                 }
         );
+        Button btnMyProduct = new Button("Ürünlerim");
+        btnMyProduct.addClickListener(buttonClickEvent -> {
+            refreshData(userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId());
+        });
+        Button btnAllProduct = new Button("Tüm Ürünler");
+        btnAllProduct.addClickListener(buttonClickEvent -> {
+            refreshData();
+        });
+        //CategoryFilter begin
+        Button btnCategoryFilter = new Button("Kategori Ara", VaadinIcon.FILTER.create());
+        ComboBox comboBoxCategoryFilter = new ComboBox<>( );
+
+        List<Category> categories1 = categoryService.findAll();
+        List<String> categoryFor1 = new ArrayList<>();
+        for (Category categoryType : categories1) {
+            categoryFor1.add(categoryType.getCategoryType());
+        }
+        comboBoxCategoryFilter.setPlaceholder("Kategori girin");
+        comboBoxCategoryFilter.setItems(categoryFor1);
+
+        HorizontalLayout btnCategoryFilterGruop = new HorizontalLayout();
+
+        btnCategoryFilterGruop.add(comboBoxCategoryFilter,btnCategoryFilter);
+
+        btnCategoryFilter.addClickListener(buttonClickEvent -> {
+            refreshCategoryData(comboBoxCategoryFilter.getValue().toString());
+            comboBoxCategoryFilter.setValue("");
+        });
+        //category filter last
+
+        HorizontalLayout horizontalLayoutAllandMyProduct = new HorizontalLayout();
+        horizontalLayoutAllandMyProduct.add(btnEkle, btnMyProduct, btnAllProduct);
+
+        HorizontalLayout horizontalLayoutbtnCategoryFilterandFilterGroup=new HorizontalLayout();
+        horizontalLayoutbtnCategoryFilterandFilterGroup.add(btnCategoryFilterGruop,filterGroup);
 
         grid.setColumns("user.firstName", "category.categoryType", "city", "cityDistrict", "address", "price", "image", "description", "date", "numberOfViews");
 
         refreshData();
-        add(btnEkle, filterGroup, grid);
+        add(horizontalLayoutAllandMyProduct,horizontalLayoutbtnCategoryFilterandFilterGroup, grid);
     }
 
     private void refreshData() {
@@ -577,6 +620,17 @@ public class ProductView extends VerticalLayout {
     private void refreshData(String filter) {
         List<Product> productList = new ArrayList<>();
         productList.addAll(productService.getList(filter));
+        grid.setItems(productList);
+    }
+
+    private void refreshData(Long id) {
+        List<Product> productList = new ArrayList<>();
+        productList.addAll(productService.getList(id));
+        grid.setItems(productList);
+    }
+    private void refreshCategoryData(String categoryType) {
+        List<Product> productList = new ArrayList<>();
+        productList.addAll(productService.getListCategory(categoryType));
         grid.setItems(productList);
     }
 

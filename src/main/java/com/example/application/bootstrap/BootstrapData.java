@@ -41,7 +41,6 @@ public class BootstrapData implements CommandLineRunner {
         categoryService.save(furniture);
 
 
-
         //Users
         //User1
         User user1=new User();

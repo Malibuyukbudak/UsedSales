@@ -1,7 +1,6 @@
 package com.example.application.services;
 
 import com.example.application.models.User;
-
 import java.util.List;
 import java.util.Optional;
 
