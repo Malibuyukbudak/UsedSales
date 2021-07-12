@@ -50,6 +50,7 @@ public class ProductView extends VerticalLayout {
     Dialog dialog = new Dialog();
 
 
+
     public ProductView(ProductService productService, CategoryService categoryService, UserService userService, MessageService messageService) {
         this.productService = productService;
         this.categoryService = categoryService;
@@ -78,17 +79,18 @@ public class ProductView extends VerticalLayout {
         Div output = new Div();
         Image image = new Image();
 
-
         upload.setReceiver(buffer);
         upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
 
 
         upload.addSucceededListener(event -> {
             try {
+
                 byte[] imageBytes = IOUtils.toByteArray(buffer.getInputStream(event.getFileName()));
                 StreamResource resource = new StreamResource(event.getFileName(), () -> new ByteArrayInputStream(imageBytes));
                 image.setSrc(resource);
                 output.removeAll();
+
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -96,7 +98,7 @@ public class ProductView extends VerticalLayout {
         });
         upload.getElement().addEventListener("file-remove", event -> {
             output.removeAll();
-            image.removeAll();
+            //image.removeAll();
         });
 
 
@@ -359,6 +361,7 @@ public class ProductView extends VerticalLayout {
         //FormLayout
         FormLayout formLayout = new FormLayout();
         formLayout.add(selectCategory, textPrice, selectCity, selectCityDistrict, textAddress, textDescription, valueDatePicker, upload, image);
+
         //FormLayout Last
         //Properties Last
 
@@ -388,12 +391,12 @@ public class ProductView extends VerticalLayout {
         Button btnSave = new Button("Kaydet");
         Button btnCancel = new Button("Çık");
 
-        Product product = new Product();
+        //Product product = new Product();
         btnSave.addClickListener(buttonClickEvent -> {
 
             Category category = new Category();
             User user = new User();
-
+            Product product = new Product();
 
             category.setCategoryType(selectCategory.getValue().toString());
             selectCategory.setValue("");
@@ -411,7 +414,7 @@ public class ProductView extends VerticalLayout {
             product.setDate(valueDatePicker.getValue());
             product.setCity(String.valueOf(selectCity.getValue()));
             selectCity.setValue("");
-
+            product.setImage(image.getSrc().getBytes(StandardCharsets.UTF_8));
             image.setSrc("");
 
 
@@ -495,73 +498,77 @@ public class ProductView extends VerticalLayout {
                     txtNumberofView1.setValue(productItemClickEvent.getItem().getNumberOfViews().toString());
                     txtNumberofView1.setReadOnly(true);
 
+
+
                     clickDialog.open();
                     Button cancelclickBtn = new Button("Kapat");
 
-                    clickDialog.add(txtUser1, txtCategory1, txtCity1, txtCityDistrict1, txtAdress1, txtPrice1, txtDescription1, txtNumberofView1, cancelclickBtn);
+                    Button messageClickBtn = new Button("Mesaj");
+
+                    Button sendMessageBtn = new Button("Gönder");
+                    Button cancelMessageBtn = new Button("Kapat");
+                    TextArea textMessage = new TextArea();
+
+
+                    messageClickBtn.addClickListener(buttonClickEvent -> {
+
+                        messageDialog.open();
+                        messageDialog.add(textMessage, sendMessageBtn, cancelMessageBtn);
+
+                        textMessage.setWidth("200px");
+                        textMessage.setWidth("200px");
+                    });
+                    sendMessageBtn.addClickListener(buttonClickEvent -> {
+                        Message message1 = new Message();
+                        message1.setMessageText(textMessage.getValue());
+                        message1.setUser(productItemClickEvent.getItem().getUser());
+                        messageService.save(message1);
+                        textMessage.setValue("");
+                        messageDialog.remove(textMessage, sendMessageBtn, cancelMessageBtn);
+                        messageDialog.close();
+                    });
+
+                    //message cancel
+                    cancelMessageBtn.addClickListener(buttonClickEvent -> {
+                        messageDialog.remove(textMessage, sendMessageBtn, cancelMessageBtn);
+                        textMessage.setValue("");
+                        messageDialog.close();
+                    });
+
+                    clickDialog.add(txtUser1, txtCategory1, txtCity1, txtCityDistrict1, txtAdress1, txtPrice1, txtDescription1, txtNumberofView1,cancelclickBtn);
+                    //kendi girişe mesaj atamasın
+                    if (productItemClickEvent.getItem().getUser().getId() != userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId()) {
+                        clickDialog.add(messageClickBtn);
+                    }
+
+
                     cancelclickBtn.addClickListener(buttonClickEvent -> {
-                        clickDialog.remove(txtUser1, txtCity1, txtCategory1, txtAdress1, txtCityDistrict1, txtPrice1, txtDescription1, txtNumberofView1, cancelclickBtn);
+                        clickDialog.remove(txtUser1, txtCity1, txtCategory1, txtAdress1, txtCityDistrict1, txtPrice1, txtDescription1, txtNumberofView1,cancelclickBtn);
+                        //kendi girişinde dialogdan silinsin.
+                        if (productItemClickEvent.getItem().getUser().getId() != userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId()) {
+                            clickDialog.remove(messageClickBtn);
+                        }
+
+
                         refreshData();
                         clickDialog.close();
                     });
-
-
+                    //Görüntülenme Sayisi
                     int x = productItemClickEvent.getItem().getNumberOfViews();
                     x = x + 1;
                     productItemClickEvent.getItem().setNumberOfViews(x);
                     productService.save(productItemClickEvent.getItem());//productItemClickEvent.getItem()=>return select row product
 
                 }
-
         );
+
         grid.setColumns("user.firstName", "category.categoryType", "city", "cityDistrict", "address", "price", "image", "description", "date", "numberOfViews");
 
-        grid.addComponentColumn(item -> createMessageButton(grid, item)).setHeader("Mesaj");
-
         refreshData();
-
         add(btnEkle, filterGroup, grid);
     }
 
-    private Button createMessageButton(Grid<Product> grid, Product item) {
-        @SuppressWarnings("unchecked")
-        Button button = new Button("Mesaj");
-
-        Button sendMessageBtn = new Button("Gönder");
-        Button cancelMessageBtn = new Button("Kapat");
-        TextArea textMessage = new TextArea();
-
-        button.addClickListener(buttonClickEvent -> {
-
-            messageDialog.open();
-            messageDialog.add(textMessage, sendMessageBtn, cancelMessageBtn);
-        });
-
-        textMessage.setWidth("200px");
-        textMessage.setWidth("200px");
-
-        sendMessageBtn.addClickListener(buttonClickEvent -> {
-            Message message1 = new Message();
-            message1.setMessageText(textMessage.getValue());
-            message1.setUser(item.getUser());
-            messageService.save(message1);
-            textMessage.setValue("");
-            messageDialog.remove(textMessage, sendMessageBtn, cancelMessageBtn);
-            messageDialog.close();
-
-        });
-
-        //message cancel
-        cancelMessageBtn.addClickListener(buttonClickEvent -> {
-            messageDialog.remove(textMessage, sendMessageBtn, cancelMessageBtn);
-            textMessage.setValue("");
-            messageDialog.close();
-        });
-        return button;
-    }
-
     private void refreshData() {
-        //User and Category Name!!!!
         List<Product> productList = new ArrayList<>();
         productList.addAll(productService.getList());
         grid.setItems(productList);

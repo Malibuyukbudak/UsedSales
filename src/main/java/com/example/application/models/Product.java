@@ -21,7 +21,8 @@ public class Product {
     private String cityDistrict;
     private String address;
     private Double price;
-    private Byte[] image;
+    @Lob
+    private byte[] image;
     private String description;
     private Integer numberOfViews=0;
 
