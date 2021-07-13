@@ -8,6 +8,7 @@ import com.example.application.services.CategoryService;
 import com.example.application.services.MessageService;
 import com.example.application.services.ProductService;
 import com.example.application.services.UserService;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -26,7 +27,10 @@ import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
+import lombok.var;
 import org.apache.commons.compress.utils.IOUtils;
+
+import javax.validation.constraints.Null;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -75,9 +79,9 @@ public class ProductView extends VerticalLayout {
         Div output = new Div();
         Image image = new Image();
 
+
         upload.setReceiver(buffer);
         upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
-
 
         upload.addSucceededListener(event -> {
             try {
@@ -85,6 +89,8 @@ public class ProductView extends VerticalLayout {
                 byte[] imageBytes = IOUtils.toByteArray(buffer.getInputStream(event.getFileName()));
                 StreamResource resource = new StreamResource(event.getFileName(), () -> new ByteArrayInputStream(imageBytes));
                 image.setSrc(resource);
+                image.setTitle(event.getFileName());
+                System.out.println(imageBytes);
                 output.removeAll();
 
 
@@ -408,15 +414,19 @@ public class ProductView extends VerticalLayout {
             product.setDate(valueDatePicker.getValue());
             product.setCity(String.valueOf(selectCity.getValue()));
             selectCity.setValue("");
-            product.setImage(image.getSrc().getBytes(StandardCharsets.UTF_8));
-            product.setId(itemIdForEdition);
+            try {
+                product.setImage(IOUtils.toByteArray(buffer.getInputStream(image.getTitle().get())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            product.setImageFileName(image.getTitle().get());
             image.setSrc("");
-
+            image.setTitle("");
+            product.setId(itemIdForEdition);
 
             if (VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId") != null) {
                 user = userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get();
                 product.setUser(user);
-
             }
 
             productService.save(product);
@@ -425,11 +435,9 @@ public class ProductView extends VerticalLayout {
 
         });
 
-
         btnCancel.addClickListener(buttonClickEvent -> {
             dialog.close();
         });
-
 
         horizontalLayout.add(btnSave, btnCancel);
         dialog.add(formLayout, horizontalLayout);
@@ -447,7 +455,6 @@ public class ProductView extends VerticalLayout {
         btnEkle.addClickListener(buttonClickEvent -> {
             dialog.open();
         });
-
 
         grid.addItemClickListener(productItemClickEvent -> {
 
@@ -490,6 +497,14 @@ public class ProductView extends VerticalLayout {
                     txtNumberofView1.setLabel("Görüntülenme Sayısı");
                     txtNumberofView1.setValue(productItemClickEvent.getItem().getNumberOfViews().toString());
                     txtNumberofView1.setReadOnly(true);
+                    Image image1 = new Image();
+                    image1.setSrc("");
+
+                    if (productItemClickEvent.getItem().getImageFileName() != null) {
+                        StreamResource resource = new StreamResource(productItemClickEvent.getItem().getImageFileName(), () -> new ByteArrayInputStream((productItemClickEvent.getItem().getImage())));
+                        image1.setSrc(resource);
+                    }
+
 
                     Button updateClickBtn = new Button("Güncelle");
                     updateClickBtn.addClickListener(buttonClickEvent -> {
@@ -503,7 +518,6 @@ public class ProductView extends VerticalLayout {
                         dialog.open();//formlayout
                     });
 
-
                     clickDialog.open();
                     Button cancelclickBtn = new Button("Kapat");
 
@@ -512,7 +526,6 @@ public class ProductView extends VerticalLayout {
                     Button sendMessageBtn = new Button("Gönder");
                     Button cancelMessageBtn = new Button("Kapat");
                     TextArea textMessage = new TextArea();
-
 
                     messageClickBtn.addClickListener(buttonClickEvent -> {
 
@@ -539,7 +552,7 @@ public class ProductView extends VerticalLayout {
                         messageDialog.close();
                     });
 
-                    clickDialog.add(txtUser1, txtCategory1, txtCity1, txtCityDistrict1, txtAdress1, txtPrice1, txtDescription1, txtNumberofView1, cancelclickBtn);
+                    clickDialog.add(txtUser1, txtCategory1, txtCity1, txtCityDistrict1, txtAdress1, txtPrice1, txtDescription1, txtNumberofView1, image1, cancelclickBtn);
                     //kendi girişe mesaj atamasın
                     if (productItemClickEvent.getItem().getUser().getId() != userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId()) {
                         clickDialog.add(messageClickBtn);
@@ -547,16 +560,14 @@ public class ProductView extends VerticalLayout {
                         clickDialog.add(updateClickBtn);
                     }
 
-
                     cancelclickBtn.addClickListener(buttonClickEvent -> {
-                        clickDialog.remove(txtUser1, txtCity1, txtCategory1, txtAdress1, txtCityDistrict1, txtPrice1, txtDescription1, txtNumberofView1, cancelclickBtn);
+                        clickDialog.remove(txtUser1, txtCity1, txtCategory1, txtAdress1, txtCityDistrict1, txtPrice1, txtDescription1, txtNumberofView1, image1, cancelclickBtn);
                         //kendi girişinde dialogdan silinsin.
                         if (productItemClickEvent.getItem().getUser().getId() != userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId()) {
                             clickDialog.remove(messageClickBtn);
                         } else {
                             clickDialog.remove(updateClickBtn);
                         }
-
 
                         refreshData();
                         clickDialog.close();
@@ -566,7 +577,6 @@ public class ProductView extends VerticalLayout {
                     x = x + 1;
                     productItemClickEvent.getItem().setNumberOfViews(x);
                     productService.save(productItemClickEvent.getItem());//productItemClickEvent.getItem()=>return select row product
-
                 }
         );
         Button btnMyProduct = new Button("Ürünlerim");
@@ -579,7 +589,7 @@ public class ProductView extends VerticalLayout {
         });
         //CategoryFilter begin
         Button btnCategoryFilter = new Button("Kategori Ara", VaadinIcon.FILTER.create());
-        ComboBox comboBoxCategoryFilter = new ComboBox<>( );
+        ComboBox comboBoxCategoryFilter = new ComboBox<>();
 
         List<Category> categories1 = categoryService.findAll();
         List<String> categoryFor1 = new ArrayList<>();
@@ -591,7 +601,7 @@ public class ProductView extends VerticalLayout {
 
         HorizontalLayout btnCategoryFilterGruop = new HorizontalLayout();
 
-        btnCategoryFilterGruop.add(comboBoxCategoryFilter,btnCategoryFilter);
+        btnCategoryFilterGruop.add(comboBoxCategoryFilter, btnCategoryFilter);
 
         btnCategoryFilter.addClickListener(buttonClickEvent -> {
             refreshCategoryData(comboBoxCategoryFilter.getValue().toString());
@@ -599,16 +609,36 @@ public class ProductView extends VerticalLayout {
         });
         //category filter last
 
-        HorizontalLayout horizontalLayoutAllandMyProduct = new HorizontalLayout();
-        horizontalLayoutAllandMyProduct.add(btnEkle, btnMyProduct, btnAllProduct);
+        //My Message
+        Button myMessageButton = new Button("Mesajlarım ");
+        Button cancelMyMessageButton = new Button("Kapat");
+        Dialog myMessageDialog = new Dialog();
+        TextArea textAreaMessage = new TextArea();
+        textAreaMessage.setReadOnly(true);
 
-        HorizontalLayout horizontalLayoutbtnCategoryFilterandFilterGroup=new HorizontalLayout();
-        horizontalLayoutbtnCategoryFilterandFilterGroup.add(btnCategoryFilterGruop,filterGroup);
+        myMessageButton.addClickListener(buttonClickEvent -> {
+            textAreaMessage.setValue(String.valueOf(refreshMessageData(userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId())));
+            myMessageDialog.add(textAreaMessage, cancelMyMessageButton);
+            myMessageDialog.open();
+        });
+        cancelMyMessageButton.addClickListener(buttonClickEvent -> {
+            myMessageDialog.close();
+        });
+        //my message last
+        Button btnLogout = new Button("Çıkış Yap");
+        btnLogout.addClickListener(buttonClickEvent -> {
+            UI.getCurrent().getPage().setLocation("/login");
+        });
+        HorizontalLayout horizontalLayoutAllandMyProduct = new HorizontalLayout();
+        horizontalLayoutAllandMyProduct.add(btnEkle, btnMyProduct, btnAllProduct, myMessageButton, btnLogout);
+
+        HorizontalLayout horizontalLayoutbtnCategoryFilterandFilterGroup = new HorizontalLayout();
+        horizontalLayoutbtnCategoryFilterandFilterGroup.add(btnCategoryFilterGruop, filterGroup);
 
         grid.setColumns("user.firstName", "category.categoryType", "city", "cityDistrict", "address", "price", "image", "description", "date", "numberOfViews");
 
         refreshData();
-        add(horizontalLayoutAllandMyProduct,horizontalLayoutbtnCategoryFilterandFilterGroup, grid);
+        add(horizontalLayoutAllandMyProduct, horizontalLayoutbtnCategoryFilterandFilterGroup, grid);
     }
 
     private void refreshData() {
@@ -628,11 +658,20 @@ public class ProductView extends VerticalLayout {
         productList.addAll(productService.getList(id));
         grid.setItems(productList);
     }
+
     private void refreshCategoryData(String categoryType) {
         List<Product> productList = new ArrayList<>();
         productList.addAll(productService.getListCategory(categoryType));
         grid.setItems(productList);
     }
 
-
+    private List<String> refreshMessageData(Long id) {
+        List<Message> messageList = new ArrayList<>();
+        List<String> messageText = new ArrayList<>();
+        messageList.addAll(messageService.getList(id));
+        for (var mes : messageList) {
+            messageText.add(mes.getMessageText());
+        }
+        return messageText;
+    }
 }

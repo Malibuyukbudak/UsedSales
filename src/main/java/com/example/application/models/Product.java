@@ -23,6 +23,7 @@ public class Product {
     private Double price;
     @Lob
     private byte[] image;
+    private String imageFileName;
     private String description;
     private Integer numberOfViews=0;
 
