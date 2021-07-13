@@ -19,7 +19,7 @@ public class FirstPageView extends VerticalLayout {
 
     public FirstPageView(ProductService productService) {
         this.productService = productService;
-        grid.setColumns("user.firstName", "category.categoryType", "city", "cityDistrict", "address", "price", "image", "description", "date", "numberOfViews");
+        grid.setColumns("user.firstName", "category.categoryType", "city", "cityDistrict", "address", "price","description", "date", "numberOfViews");
         refreshData();
         Button signInButton=new Button("Giriş Yap");
         Button signUpButton=new Button("Kayıt Ol");

@@ -4,10 +4,7 @@ import com.example.application.models.Category;
 import com.example.application.models.Message;
 import com.example.application.models.Product;
 import com.example.application.models.User;
-import com.example.application.services.CategoryService;
-import com.example.application.services.MessageService;
-import com.example.application.services.ProductService;
-import com.example.application.services.UserService;
+import com.example.application.services.*;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -89,10 +86,10 @@ public class ProductView extends VerticalLayout {
                 byte[] imageBytes = IOUtils.toByteArray(buffer.getInputStream(event.getFileName()));
                 StreamResource resource = new StreamResource(event.getFileName(), () -> new ByteArrayInputStream(imageBytes));
                 image.setSrc(resource);
+                image.setWidth("200px");
+                image.setHeight("200px");
                 image.setTitle(event.getFileName());
-                System.out.println(imageBytes);
                 output.removeAll();
-
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -116,12 +113,12 @@ public class ProductView extends VerticalLayout {
                 "Sinop", "Sirnak", "Sivas", "Tekirdag", "Tokat", "Trabzon", "Tunceli", "Usak", "Van", "Yalova", "Yozgat", "Zonguldak"};
 
         selectCity.setItems(cities);
-        selectCity.setPlaceholder("Enter City");
+        selectCity.setPlaceholder("İl Seçiniz");
         //City Last
         //-----------------------------------------------------------------------------------------------------------------
         //City District Begin
         ComboBox selectCityDistrict = new ComboBox<>("İlçe");
-        selectCityDistrict.setPlaceholder("Enter City District");
+        selectCityDistrict.setPlaceholder("İlçe Seçiniz");
 
         String[] adana = new String[]{"Aladağ", "Ceyhan", "Çukurova", "Feke", "İmamoğlu", "Karaisalı", "Karataş", "Kozan",
                 "Pozantı", "Saimbeyli", "Sarıçam", "Seyhan", "Tufanbeyli", "Yumurtalık", "Yüreğir"};
@@ -338,23 +335,19 @@ public class ProductView extends VerticalLayout {
         //City District Last
         //-----------------------------------------------------------------------------------------------------------------
         //Adress,Price,Description Begin
-        TextField textAddress = new TextField("Adres", "Enter Your Address");
+        TextField textAddress = new TextField("Adres", "Adres girin");
 
-        TextField textPrice = new TextField("Fiyat", "Enter Your Price");
+        TextField textPrice = new TextField("Fiyat", "Fiyatını girin");
 
-        TextField textDescription = new TextField("Açıklama", "Enter Your Description");
+        TextField textDescription = new TextField("Açıklama", "Ürün açıklamasını girin");
         //Adress,Price,Description Last
         //-----------------------------------------------------------------------------------------------------------------
         //Category Begin
         ComboBox selectCategory = new ComboBox<>("Kategori");
-        List<Category> categories = categoryService.findAll();
-        List<String> categoryFor = new ArrayList<>();
-        for (Category categoryType : categories) {
-            categoryFor.add(categoryType.getCategoryType());
-        }
+        String[] categories = new String[]{"Elektronik", "Ev Eşyaları", "Araba"};
 
-        selectCategory.setItems(categoryFor);
-        selectCategory.setPlaceholder("Enter Category");
+        selectCategory.setItems(categories);
+        selectCategory.setPlaceholder("Kategori Seçin");
 
         //Category Last
 
@@ -393,7 +386,6 @@ public class ProductView extends VerticalLayout {
 
         //Product product = new Product();
         btnSave.addClickListener(buttonClickEvent -> {
-
             Category category = new Category();
             User user = new User();
             Product product = new Product();
@@ -453,7 +445,9 @@ public class ProductView extends VerticalLayout {
         //Add Product click to dialog
         Button btnEkle = new Button("Ürün Ekle", VaadinIcon.INSERT.create());
         btnEkle.addClickListener(buttonClickEvent -> {
+            Long itemIdForEdition = 0L;
             dialog.open();
+
         });
 
         grid.addItemClickListener(productItemClickEvent -> {
@@ -500,9 +494,12 @@ public class ProductView extends VerticalLayout {
                     Image image1 = new Image();
                     image1.setSrc("");
 
+
                     if (productItemClickEvent.getItem().getImageFileName() != null) {
                         StreamResource resource = new StreamResource(productItemClickEvent.getItem().getImageFileName(), () -> new ByteArrayInputStream((productItemClickEvent.getItem().getImage())));
                         image1.setSrc(resource);
+                        image1.setWidth("100px");
+                        image1.setHeight("100px");
                     }
 
 
@@ -515,6 +512,10 @@ public class ProductView extends VerticalLayout {
                         textAddress.setValue(productItemClickEvent.getItem().getAddress());
                         textDescription.setValue(productItemClickEvent.getItem().getDescription());
                         textPrice.setValue(productItemClickEvent.getItem().getPrice().toString());
+                        if (productItemClickEvent.getItem().getImageFileName() != null) {
+                            StreamResource resource = new StreamResource(productItemClickEvent.getItem().getImageFileName(), () -> new ByteArrayInputStream((productItemClickEvent.getItem().getImage())));
+                            image1.setSrc(resource);
+                        }
                         dialog.open();//formlayout
                     });
 
@@ -590,14 +591,8 @@ public class ProductView extends VerticalLayout {
         //CategoryFilter begin
         Button btnCategoryFilter = new Button("Kategori Ara", VaadinIcon.FILTER.create());
         ComboBox comboBoxCategoryFilter = new ComboBox<>();
-
-        List<Category> categories1 = categoryService.findAll();
-        List<String> categoryFor1 = new ArrayList<>();
-        for (Category categoryType : categories1) {
-            categoryFor1.add(categoryType.getCategoryType());
-        }
-        comboBoxCategoryFilter.setPlaceholder("Kategori girin");
-        comboBoxCategoryFilter.setItems(categoryFor1);
+        comboBoxCategoryFilter.setPlaceholder("Kategori Seçin");
+        comboBoxCategoryFilter.setItems(categories);
 
         HorizontalLayout btnCategoryFilterGruop = new HorizontalLayout();
 
@@ -627,7 +622,7 @@ public class ProductView extends VerticalLayout {
         //my message last
         Button btnLogout = new Button("Çıkış Yap");
         btnLogout.addClickListener(buttonClickEvent -> {
-            UI.getCurrent().getPage().setLocation("/login");
+            UI.getCurrent().getPage().setLocation("/firstpage");
         });
         HorizontalLayout horizontalLayoutAllandMyProduct = new HorizontalLayout();
         horizontalLayoutAllandMyProduct.add(btnEkle, btnMyProduct, btnAllProduct, myMessageButton, btnLogout);
@@ -635,7 +630,9 @@ public class ProductView extends VerticalLayout {
         HorizontalLayout horizontalLayoutbtnCategoryFilterandFilterGroup = new HorizontalLayout();
         horizontalLayoutbtnCategoryFilterandFilterGroup.add(btnCategoryFilterGruop, filterGroup);
 
-        grid.setColumns("user.firstName", "category.categoryType", "city", "cityDistrict", "address", "price", "image", "description", "date", "numberOfViews");
+        grid.setColumns("user.firstName", "category.categoryType", "city", "cityDistrict", "address", "price", "description", "date", "numberOfViews");
+        grid.setHeightByRows(true);
+        grid.addComponentColumn(item -> imageShow(grid, item)).setAutoWidth(true);
 
         refreshData();
         add(horizontalLayoutAllandMyProduct, horizontalLayoutbtnCategoryFilterandFilterGroup, grid);
@@ -673,5 +670,18 @@ public class ProductView extends VerticalLayout {
             messageText.add(mes.getMessageText());
         }
         return messageText;
+    }
+
+    private Image imageShow(Grid<Product> grid, Product item) {
+
+        Image image2 = new Image();
+        image2.setSrc("");
+        image2.setWidth("100px");
+        image2.setHeight("100px");
+        if (item.getImageFileName() != null) {
+            StreamResource resource = new StreamResource(item.getImageFileName(), () -> new ByteArrayInputStream((item.getImage())));
+            image2.setSrc(resource);
+        }
+        return image2;
     }
 }
