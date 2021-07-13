@@ -390,6 +390,7 @@ public class ProductView extends VerticalLayout {
             User user = new User();
             Product product = new Product();
 
+
             category.setCategoryType(selectCategory.getValue().toString());
             selectCategory.setValue("");
             product.setPrice(Double.valueOf(textPrice.getValue()));
@@ -422,6 +423,7 @@ public class ProductView extends VerticalLayout {
             }
 
             productService.save(product);
+            itemIdForEdition = 0L;
             refreshData(textFilter.getValue());
             dialog.close();
 
@@ -445,7 +447,6 @@ public class ProductView extends VerticalLayout {
         //Add Product click to dialog
         Button btnEkle = new Button("Ürün Ekle", VaadinIcon.INSERT.create());
         btnEkle.addClickListener(buttonClickEvent -> {
-            Long itemIdForEdition = 0L;
             dialog.open();
 
         });
