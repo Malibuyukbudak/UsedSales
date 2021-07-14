@@ -15,6 +15,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -387,6 +388,7 @@ public class ProductView extends VerticalLayout {
 
         //Product product = new Product();
         btnSave.addClickListener(buttonClickEvent -> {
+
             Category category = new Category();
             User user = new User();
             Product product = new Product();
@@ -429,8 +431,8 @@ public class ProductView extends VerticalLayout {
             productService.save(product);
             itemIdForEdition = 0L;
             refreshData(textFilter.getValue());
-            dialog.close();
 
+            dialog.close();
         });
 
         btnCancel.addClickListener(buttonClickEvent -> {
@@ -531,12 +533,12 @@ public class ProductView extends VerticalLayout {
 
                         if (productItemClickEvent.getItem().getImageFileName() != null) {
                             StreamResource resource = new StreamResource(productItemClickEvent.getItem().getImageFileName(), () -> new ByteArrayInputStream((productItemClickEvent.getItem().getImage())));
-                            image1.setSrc(resource);
-                            image1.setWidth("100px");
-                            image1.setHeight("100px");
+                            image.setSrc(resource);
+                            image.setWidth("100px");
+                            image.setHeight("100px");
                         }
                         else{
-                            image1.setSrc("");
+                            image.setSrc("");
                         }
                         dialog.open();//formlayout
                     });
@@ -629,15 +631,21 @@ public class ProductView extends VerticalLayout {
         //My Message
         Button myMessageButton = new Button("Mesajlarım ");
         Button cancelMyMessageButton = new Button("Kapat");
+        Button sendMyMessageButton=new Button("Cevap Ver");
+
         Dialog myMessageDialog = new Dialog();
+
         TextArea textAreaMessage = new TextArea();
         textAreaMessage.setReadOnly(true);
+        textAreaMessage.setValue(String.valueOf(refreshMessageData(userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId())));
+        sendMyMessageButton.addClickListener(buttonClickEvent -> {
 
+        });
+        myMessageDialog.add(textAreaMessage,sendMyMessageButton ,cancelMyMessageButton);
         myMessageButton.addClickListener(buttonClickEvent -> {
-            textAreaMessage.setValue(String.valueOf(refreshMessageData(userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId())));
-            myMessageDialog.add(textAreaMessage, cancelMyMessageButton);
             myMessageDialog.open();
         });
+
         cancelMyMessageButton.addClickListener(buttonClickEvent -> {
             myMessageDialog.close();
         });
@@ -691,6 +699,7 @@ public class ProductView extends VerticalLayout {
         for (var mes : messageList) {
             messageText.add(mes.getMessageText());
         }
+
         return messageText;
     }
 
