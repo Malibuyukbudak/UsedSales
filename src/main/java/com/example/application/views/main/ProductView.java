@@ -75,6 +75,8 @@ public class ProductView extends VerticalLayout {
         Upload upload = new Upload(buffer);
         Div output = new Div();
         Image image = new Image();
+        image.setWidth("50px");
+        image.setHeight("150px");
 
 
         upload.setReceiver(buffer);
@@ -86,8 +88,6 @@ public class ProductView extends VerticalLayout {
                 byte[] imageBytes = IOUtils.toByteArray(buffer.getInputStream(event.getFileName()));
                 StreamResource resource = new StreamResource(event.getFileName(), () -> new ByteArrayInputStream(imageBytes));
                 image.setSrc(resource);
-                image.setWidth("200px");
-                image.setHeight("200px");
                 image.setTitle(event.getFileName());
                 output.removeAll();
 
@@ -97,7 +97,8 @@ public class ProductView extends VerticalLayout {
         });
         upload.getElement().addEventListener("file-remove", event -> {
             output.removeAll();
-            //image.removeAll();
+            image.setSrc("");
+            image.setTitle("");
         });
 
 
@@ -407,12 +408,15 @@ public class ProductView extends VerticalLayout {
             product.setDate(valueDatePicker.getValue());
             product.setCity(String.valueOf(selectCity.getValue()));
             selectCity.setValue("");
-            try {
-                product.setImage(IOUtils.toByteArray(buffer.getInputStream(image.getTitle().get())));
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(!(image.getSrc().equals(""))){
+                try {
+                    product.setImage(IOUtils.toByteArray(buffer.getInputStream(image.getTitle().get())));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                product.setImageFileName(image.getTitle().get());
             }
-            product.setImageFileName(image.getTitle().get());
+
             image.setSrc("");
             image.setTitle("");
             product.setId(itemIdForEdition);
@@ -430,6 +434,14 @@ public class ProductView extends VerticalLayout {
         });
 
         btnCancel.addClickListener(buttonClickEvent -> {
+            selectCategory.setValue("");
+            textPrice.setValue("");
+            selectCityDistrict.setValue("");
+            textAddress.setValue("");
+            textDescription.setValue("");
+            selectCity.setValue("");
+            image.setSrc("");
+            image.setTitle("");
             dialog.close();
         });
 
@@ -492,15 +504,18 @@ public class ProductView extends VerticalLayout {
                     txtNumberofView1.setLabel("Görüntülenme Sayısı");
                     txtNumberofView1.setValue(productItemClickEvent.getItem().getNumberOfViews().toString());
                     txtNumberofView1.setReadOnly(true);
-                    Image image1 = new Image();
-                    image1.setSrc("");
 
+
+                    Image image1 = new Image();
 
                     if (productItemClickEvent.getItem().getImageFileName() != null) {
                         StreamResource resource = new StreamResource(productItemClickEvent.getItem().getImageFileName(), () -> new ByteArrayInputStream((productItemClickEvent.getItem().getImage())));
                         image1.setSrc(resource);
-                        image1.setWidth("100px");
-                        image1.setHeight("100px");
+                        //image1.setWidth("100px");
+                        //image1.setHeight("100px");
+                    }
+                    else{
+                        image1.setSrc("");
                     }
 
 
@@ -513,9 +528,15 @@ public class ProductView extends VerticalLayout {
                         textAddress.setValue(productItemClickEvent.getItem().getAddress());
                         textDescription.setValue(productItemClickEvent.getItem().getDescription());
                         textPrice.setValue(productItemClickEvent.getItem().getPrice().toString());
+
                         if (productItemClickEvent.getItem().getImageFileName() != null) {
                             StreamResource resource = new StreamResource(productItemClickEvent.getItem().getImageFileName(), () -> new ByteArrayInputStream((productItemClickEvent.getItem().getImage())));
                             image1.setSrc(resource);
+                            image1.setWidth("100px");
+                            image1.setHeight("100px");
+                        }
+                        else{
+                            image1.setSrc("");
                         }
                         dialog.open();//formlayout
                     });
