@@ -80,11 +80,11 @@ public class BootstrapData implements CommandLineRunner {
 
         //Product1
         Product product1=new Product();
-        product1.setAddress("Istanbul Fatih address");
+        product1.setAddress("Istanbul Fatih adres");
         product1.setCity("Istanbul");
         product1.setCityDistrict("Fatih");
         product1.setDate(LocalDate.now());
-        product1.setDescription("Car description : fiat egea 2018 ");
+        product1.setDescription("araba açıklaması : fiat egea 2018 ");
         product1.setPrice(100000.0);
         product1.setCategory(car);
         product1.setUser(user1);
@@ -98,7 +98,7 @@ public class BootstrapData implements CommandLineRunner {
         product2.setCity("Edirne");
         product2.setCityDistrict("Merkez");
         product2.setDate(LocalDate.now());
-        product2.setDescription("Furniture descriptions : armchair");
+        product2.setDescription("Ev Eşyası açıklaması : koltuk");
         product2.setPrice(250.0);
         product2.setCategory(furniture);
         product2.setUser(user2);
@@ -112,7 +112,7 @@ public class BootstrapData implements CommandLineRunner {
         product3.setCity("Balıkesir");
         product3.setCityDistrict("Burhaniye");
         product3.setDate(LocalDate.now());
-        product3.setDescription("Electronic descriptions: computer");
+        product3.setDescription("Elektronik Açıklama: Bilgisayar");
         product3.setPrice(4600.0);
         product3.setCategory(electronic);
         product3.setUser(user3);
@@ -126,7 +126,7 @@ public class BootstrapData implements CommandLineRunner {
         product4.setCity("Izmir");
         product4.setCityDistrict("Konak");
         product4.setDate(LocalDate.now());
-        product4.setDescription("Electronic descriptions: headphone");
+        product4.setDescription("Elektronik Açıklaması : Telefon");
         product4.setPrice(450.0);
         product4.setCategory(furniture);
         product4.setUser(user4);

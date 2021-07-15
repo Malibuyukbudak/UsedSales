@@ -76,8 +76,8 @@ public class ProductView extends VerticalLayout {
         Upload upload = new Upload(buffer);
         Div output = new Div();
         Image image = new Image();
-        image.setWidth("50px");
-        image.setHeight("150px");
+        image.setWidth("300px");
+        image.setHeight("300px");
 
 
         upload.setReceiver(buffer);
@@ -410,17 +410,23 @@ public class ProductView extends VerticalLayout {
             product.setDate(valueDatePicker.getValue());
             product.setCity(String.valueOf(selectCity.getValue()));
             selectCity.setValue("");
-            if(!(image.getSrc().equals(""))){
+
+            if (!(image.getSrc().equals(""))) {
                 try {
                     product.setImage(IOUtils.toByteArray(buffer.getInputStream(image.getTitle().get())));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 product.setImageFileName(image.getTitle().get());
+            } else {
+                product.setImage("".getBytes(StandardCharsets.UTF_8));
+                product.setImageFileName("");
             }
-
             image.setSrc("");
             image.setTitle("");
+
+
+
             product.setId(itemIdForEdition);
 
             if (VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId") != null) {
@@ -466,6 +472,11 @@ public class ProductView extends VerticalLayout {
         });
 
         grid.addItemClickListener(productItemClickEvent -> {
+                    //Görüntülenme Sayisi
+                    int x = productItemClickEvent.getItem().getNumberOfViews();
+                    x = x + 1;
+                    productItemClickEvent.getItem().setNumberOfViews(x);
+                    productService.save(productItemClickEvent.getItem());//productItemClickEvent.getItem()=>return select row product
 
                     TextArea txtUser1 = new TextArea();
                     txtUser1.setLabel("İsim");
@@ -509,16 +520,18 @@ public class ProductView extends VerticalLayout {
 
 
                     Image image1 = new Image();
+                    image1.setWidth("100px");
+                    image1.setHeight("100px");
 
                     if (productItemClickEvent.getItem().getImageFileName() != null) {
                         StreamResource resource = new StreamResource(productItemClickEvent.getItem().getImageFileName(), () -> new ByteArrayInputStream((productItemClickEvent.getItem().getImage())));
                         image1.setSrc(resource);
-                        //image1.setWidth("100px");
-                        //image1.setHeight("100px");
-                    }
-                    else{
+
+                    } else {
                         image1.setSrc("");
                     }
+
+
 
 
                     Button updateClickBtn = new Button("Güncelle");
@@ -533,11 +546,11 @@ public class ProductView extends VerticalLayout {
 
                         if (productItemClickEvent.getItem().getImageFileName() != null) {
                             StreamResource resource = new StreamResource(productItemClickEvent.getItem().getImageFileName(), () -> new ByteArrayInputStream((productItemClickEvent.getItem().getImage())));
+
                             image.setSrc(resource);
                             image.setWidth("100px");
                             image.setHeight("100px");
-                        }
-                        else{
+                        } else {
                             image.setSrc("");
                         }
                         dialog.open();//formlayout
@@ -597,11 +610,7 @@ public class ProductView extends VerticalLayout {
                         refreshData();
                         clickDialog.close();
                     });
-                    //Görüntülenme Sayisi
-                    int x = productItemClickEvent.getItem().getNumberOfViews();
-                    x = x + 1;
-                    productItemClickEvent.getItem().setNumberOfViews(x);
-                    productService.save(productItemClickEvent.getItem());//productItemClickEvent.getItem()=>return select row product
+
                 }
         );
         Button btnMyProduct = new Button("Ürünlerim");
@@ -631,17 +640,14 @@ public class ProductView extends VerticalLayout {
         //My Message
         Button myMessageButton = new Button("Mesajlarım ");
         Button cancelMyMessageButton = new Button("Kapat");
-        Button sendMyMessageButton=new Button("Cevap Ver");
 
         Dialog myMessageDialog = new Dialog();
 
         TextArea textAreaMessage = new TextArea();
         textAreaMessage.setReadOnly(true);
         textAreaMessage.setValue(String.valueOf(refreshMessageData(userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId())));
-        sendMyMessageButton.addClickListener(buttonClickEvent -> {
 
-        });
-        myMessageDialog.add(textAreaMessage,sendMyMessageButton ,cancelMyMessageButton);
+        myMessageDialog.add(textAreaMessage, cancelMyMessageButton);
         myMessageButton.addClickListener(buttonClickEvent -> {
             myMessageDialog.open();
         });

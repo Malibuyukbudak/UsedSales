@@ -36,13 +36,10 @@ public class RegisterView extends VerticalLayout {
             userService.save(user);
             UI.getCurrent().getPage().setLocation("/login");
         });
-        Button signInBtn=new Button("Giriş Yap");
-        HorizontalLayout horizontalLayout=new HorizontalLayout();
-        horizontalLayout.add(signUpBtn,signInBtn);
 
-        signInBtn.addClickListener(buttonClickEvent -> {
-            UI.getCurrent().getPage().setLocation("/login");
-        });
+        HorizontalLayout horizontalLayout=new HorizontalLayout();
+        horizontalLayout.add(signUpBtn);
+
         add(header,txtFirstName, txtLastName, txtEmail, txtPassword, horizontalLayout);
 
 
