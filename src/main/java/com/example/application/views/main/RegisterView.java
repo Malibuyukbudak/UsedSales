@@ -18,7 +18,7 @@ public class RegisterView extends VerticalLayout {
     public RegisterView(UserService userService) {
 
         this.userService = userService;
-        H2 header=new H2("Sign Up");
+        H2 header=new H2("Kayıt Ol");
 
         TextField txtFirstName = new TextField("İsim");
         TextField txtLastName = new TextField("Soyisim");

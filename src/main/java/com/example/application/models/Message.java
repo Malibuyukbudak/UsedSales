@@ -20,5 +20,7 @@ public class Message {
     private User user;
 
     private String messageText;
+    @ManyToOne
+    private User gonderenUser;
 
 }

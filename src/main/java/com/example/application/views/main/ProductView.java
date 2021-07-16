@@ -5,6 +5,7 @@ import com.example.application.models.Message;
 import com.example.application.models.Product;
 import com.example.application.models.User;
 import com.example.application.services.*;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -109,7 +110,7 @@ public class ProductView extends VerticalLayout {
         String[] cities = new String[]{"Adana", "Adiyaman", "Afyon", "Agri", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin", "Aydin",
                 "Balikesir", "Bartin", "Batman", "Bayburt", "Bilecik", "Bingol", "Bitlis", "Bolu", "Burdur", "Bursa", "Canakkale", "Cankiri",
                 "Corum", "Denizli", "Diyarbakir", "Duzce", "Edirne", "Elazig", "Erzincan", "Erzurum", "Eskisehir", "Gaziantep", "Giresun",
-                "Gumushane", "Hakkari", "Hatay", "Igdir", "Isparta", "Istanbul", "Izmir", "Kahramanmaras", "Karabuk", "Karaman", "Kars",
+                "Gumushane", "Hakkari", "Hatay", "Igdir", "Isparta", "İstanbul", "İzmir", "Kahramanmaras", "Karabuk", "Karaman", "Kars",
                 "Kastamonu", "Kayseri", "Kilis", "Kirikkale", "Kirklareli", "Kirsehir", "Kocaeli", "Konya", "Kutahya", "Malatya", "Manisa",
                 "Mardin", "Mersin", "Mugla", "Mus", "Nevsehir", "Nigde", "Ordu", "Osmaniye", "Rize", "Sakarya", "Samsun", "Sanliurfa", "Siirt",
                 "Sinop", "Sirnak", "Sivas", "Tekirdag", "Tokat", "Trabzon", "Tunceli", "Usak", "Van", "Yalova", "Yozgat", "Zonguldak"};
@@ -289,8 +290,8 @@ public class ProductView extends VerticalLayout {
             else if (event.getValue().equals("Hatay")) selectCityDistrict.setItems(hatay);
             else if (event.getValue().equals("Igdir")) selectCityDistrict.setItems(igdir);
             else if (event.getValue().equals("Isparta")) selectCityDistrict.setItems(isparta);
-            else if (event.getValue().equals("Istanbul")) selectCityDistrict.setItems(istanbul);
-            else if (event.getValue().equals("Izmir")) selectCityDistrict.setItems(izmir);
+            else if (event.getValue().equals("İstanbul")) selectCityDistrict.setItems(istanbul);
+            else if (event.getValue().equals("İzmir")) selectCityDistrict.setItems(izmir);
             else if (event.getValue().equals("Kahramanmaras")) selectCityDistrict.setItems(kahramanmaras);
             else if (event.getValue().equals("Karabuk")) selectCityDistrict.setItems(karabuk);
             else if (event.getValue().equals("Karaman")) selectCityDistrict.setItems(karaman);
@@ -426,7 +427,6 @@ public class ProductView extends VerticalLayout {
             image.setTitle("");
 
 
-
             product.setId(itemIdForEdition);
 
             if (VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId") != null) {
@@ -532,8 +532,6 @@ public class ProductView extends VerticalLayout {
                     }
 
 
-
-
                     Button updateClickBtn = new Button("Güncelle");
                     updateClickBtn.addClickListener(buttonClickEvent -> {
                         itemIdForEdition = productItemClickEvent.getItem().getId();
@@ -554,6 +552,7 @@ public class ProductView extends VerticalLayout {
                             image.setSrc("");
                         }
                         dialog.open();//formlayout
+                        refreshData(userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId());
                     });
 
                     clickDialog.open();
@@ -565,10 +564,12 @@ public class ProductView extends VerticalLayout {
                     Button cancelMessageBtn = new Button("Kapat");
                     TextArea textMessage = new TextArea();
 
-                    messageClickBtn.addClickListener(buttonClickEvent -> {
 
-                        messageDialog.open();
+
+                    messageClickBtn.addClickListener(buttonClickEvent -> {
                         messageDialog.add(textMessage, sendMessageBtn, cancelMessageBtn);
+                        messageDialog.open();
+
 
                         textMessage.setWidth("200px");
                         textMessage.setWidth("200px");
@@ -577,6 +578,8 @@ public class ProductView extends VerticalLayout {
                         Message message1 = new Message();
                         message1.setMessageText(textMessage.getValue());
                         message1.setUser(productItemClickEvent.getItem().getUser());
+                        message1.setGonderenUser(userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get());
+
                         messageService.save(message1);
                         textMessage.setValue("");
                         messageDialog.remove(textMessage, sendMessageBtn, cancelMessageBtn);
@@ -646,6 +649,7 @@ public class ProductView extends VerticalLayout {
         TextArea textAreaMessage = new TextArea();
         textAreaMessage.setReadOnly(true);
         textAreaMessage.setValue(String.valueOf(refreshMessageData(userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId())));
+
 
         myMessageDialog.add(textAreaMessage, cancelMyMessageButton);
         myMessageButton.addClickListener(buttonClickEvent -> {
