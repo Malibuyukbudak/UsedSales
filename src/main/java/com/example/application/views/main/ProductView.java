@@ -110,7 +110,7 @@ public class ProductView extends VerticalLayout {
         String[] cities = new String[]{"Adana", "Adiyaman", "Afyon", "Agri", "Aksaray", "Amasya", "Ankara", "Antalya", "Ardahan", "Artvin", "Aydin",
                 "Balikesir", "Bartin", "Batman", "Bayburt", "Bilecik", "Bingol", "Bitlis", "Bolu", "Burdur", "Bursa", "Canakkale", "Cankiri",
                 "Corum", "Denizli", "Diyarbakir", "Duzce", "Edirne", "Elazig", "Erzincan", "Erzurum", "Eskisehir", "Gaziantep", "Giresun",
-                "Gumushane", "Hakkari", "Hatay", "Igdir", "Isparta", "İstanbul", "İzmir", "Kahramanmaras", "Karabuk", "Karaman", "Kars",
+                "Gumushane", "Hakkari", "Hatay", "Igdir", "Isparta", "Istanbul", "Izmir", "Kahramanmaras", "Karabuk", "Karaman", "Kars",
                 "Kastamonu", "Kayseri", "Kilis", "Kirikkale", "Kirklareli", "Kirsehir", "Kocaeli", "Konya", "Kutahya", "Malatya", "Manisa",
                 "Mardin", "Mersin", "Mugla", "Mus", "Nevsehir", "Nigde", "Ordu", "Osmaniye", "Rize", "Sakarya", "Samsun", "Sanliurfa", "Siirt",
                 "Sinop", "Sirnak", "Sivas", "Tekirdag", "Tokat", "Trabzon", "Tunceli", "Usak", "Van", "Yalova", "Yozgat", "Zonguldak"};
@@ -290,8 +290,8 @@ public class ProductView extends VerticalLayout {
             else if (event.getValue().equals("Hatay")) selectCityDistrict.setItems(hatay);
             else if (event.getValue().equals("Igdir")) selectCityDistrict.setItems(igdir);
             else if (event.getValue().equals("Isparta")) selectCityDistrict.setItems(isparta);
-            else if (event.getValue().equals("İstanbul")) selectCityDistrict.setItems(istanbul);
-            else if (event.getValue().equals("İzmir")) selectCityDistrict.setItems(izmir);
+            else if (event.getValue().equals("Istanbul")) selectCityDistrict.setItems(istanbul);
+            else if (event.getValue().equals("Izmir")) selectCityDistrict.setItems(izmir);
             else if (event.getValue().equals("Kahramanmaras")) selectCityDistrict.setItems(kahramanmaras);
             else if (event.getValue().equals("Karabuk")) selectCityDistrict.setItems(karabuk);
             else if (event.getValue().equals("Karaman")) selectCityDistrict.setItems(karaman);
@@ -477,6 +477,7 @@ public class ProductView extends VerticalLayout {
                     x = x + 1;
                     productItemClickEvent.getItem().setNumberOfViews(x);
                     productService.save(productItemClickEvent.getItem());//productItemClickEvent.getItem()=>return select row product
+                    //refreshData();
 
                     TextArea txtUser1 = new TextArea();
                     txtUser1.setLabel("İsim");
@@ -551,8 +552,9 @@ public class ProductView extends VerticalLayout {
                         } else {
                             image.setSrc("");
                         }
+
                         dialog.open();//formlayout
-                        refreshData(userService.findUser(Long.valueOf(VaadinSession.getCurrent().getSession().getAttribute("LoggedInUserId").toString())).get().getId());
+                        //refreshData();
                     });
 
                     clickDialog.open();
@@ -610,9 +612,10 @@ public class ProductView extends VerticalLayout {
                             clickDialog.remove(updateClickBtn);
                         }
 
-                        refreshData();
+
                         clickDialog.close();
                     });
+                    //refreshData();
 
                 }
         );
