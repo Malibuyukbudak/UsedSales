@@ -33,7 +33,7 @@ Once the JAR file is built, you can run it using
 
 ## Project Features
 
--Login, register,log out , add product, update product, show my products button, send message, 
+- Login, register, log out ,add product, update product, show my products button, send message, 
 image add, filter the category name, filter the description, product views, view sent messages.
 
 
