@@ -423,9 +423,9 @@ public class ProductView extends VerticalLayout {
                 product.setImage("".getBytes(StandardCharsets.UTF_8));
                 product.setImageFileName("");
             }
+
             image.setSrc("");
             image.setTitle("");
-
 
             product.setId(itemIdForEdition);
 
@@ -533,6 +533,7 @@ public class ProductView extends VerticalLayout {
                     }
 
 
+
                     Button updateClickBtn = new Button("Güncelle");
                     updateClickBtn.addClickListener(buttonClickEvent -> {
                         itemIdForEdition = productItemClickEvent.getItem().getId();
@@ -542,6 +543,7 @@ public class ProductView extends VerticalLayout {
                         textAddress.setValue(productItemClickEvent.getItem().getAddress());
                         textDescription.setValue(productItemClickEvent.getItem().getDescription());
                         textPrice.setValue(productItemClickEvent.getItem().getPrice().toString());
+
 
                         if (productItemClickEvent.getItem().getImageFileName() != null) {
                             StreamResource resource = new StreamResource(productItemClickEvent.getItem().getImageFileName(), () -> new ByteArrayInputStream((productItemClickEvent.getItem().getImage())));

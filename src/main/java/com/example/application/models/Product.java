@@ -1,5 +1,6 @@
 package com.example.application.models;
 
+import com.vaadin.flow.component.upload.Upload;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,7 @@ public class Product {
     private String imageFileName;
     private String description;
     private Integer numberOfViews=0;
+
 
     @ManyToOne
     private Category category;
