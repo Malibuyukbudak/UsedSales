@@ -10,7 +10,7 @@ http://localhost:8080 in your browser.
 
 You can also import the project to your IDE of choice as you would with any
 Maven project. Read more on [how to set up a development environment for
-Vaadin projects](https://vaadin.com/docs/latest/guide/install) (Windows, Linux, macOS).[2.El Eşya .pptx](https://github.com/Malibuyukbudak/UsedSales/files/6834429/2.El.Esya.pptx)
+Vaadin projects](https://vaadin.com/docs/latest/guide/install) (Windows, Linux, macOS).
 
 
 ## Deploying to Production
