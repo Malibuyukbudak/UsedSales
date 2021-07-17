@@ -1,3 +1,8 @@
+
+# PROJE SUNUMU
+
+[Uploading 2.El Eşya .pptx…]()
+
 # My App
 
 This project can be used as a starting point to create your own Vaadin application with Spring Boot.
@@ -10,7 +15,8 @@ http://localhost:8080 in your browser.
 
 You can also import the project to your IDE of choice as you would with any
 Maven project. Read more on [how to set up a development environment for
-Vaadin projects](https://vaadin.com/docs/latest/guide/install) (Windows, Linux, macOS).
+Vaadin projects](https://vaadin.com/docs/latest/guide/install) (Windows, Linux, macOS).[2.El Eşya .pptx](https://github.com/Malibuyukbudak/UsedSales/files/6834429/2.El.Esya.pptx)
+
 
 ## Deploying to Production
 To create a production build, call `mvn clean package -Pproduction`.
@@ -30,14 +36,9 @@ Once the JAR file is built, you can run it using
 - `views` folder in `frontend/` contains the client-side JavaScript views of your application.
 - `themes` folder in `frontend/`  contains the custom CSS styles.
 
-## Useful links
 
-- Read the documentation at [vaadin.com/docs](https://vaadin.com/docs).
-- Follow the tutorials at [vaadin.com/tutorials](https://vaadin.com/tutorials).
-- Watch training videos and get certified at [vaadin.com/learn/training]( https://vaadin.com/learn/training).
-- Create new projects at [start.vaadin.com](https://start.vaadin.com/).
-- Search UI components and their usage examples at [vaadin.com/components](https://vaadin.com/components).
-- Find a collection of solutions to common use cases in [Vaadin Cookbook](https://cookbook.vaadin.com/).
-- Find Add-ons at [vaadin.com/directory](https://vaadin.com/directory).
-- Ask questions on [Stack Overflow](https://stackoverflow.com/questions/tagged/vaadin) or join our [Discord channel](https://discord.gg/MYFq5RTbBn).
-- Report issues, create pull requests in [GitHub](https://github.com/vaadin/).
+
+
+
+
+
